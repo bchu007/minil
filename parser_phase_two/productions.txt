@@ -1,0 +1,62 @@
+Program --> Functions
+
+
+Functions -> [epsilon] | Function -> Functions 
+Function --> (function -> identifier -> [semicolon] -> beginparams) -> DECLARATIONS-> (endparams -> beginlocals) -> DECLARATIONS -> (endlocals -> beginbody) ->  STATEMENTS -> endbody
+DECLARATIONS--> (Declaration -> [semicolon]) -> DECLARATIONS | [epsilon] 
+STATEMENTS--> (Statement -> [semicolon]) -> STATEMENTS| [epsilon]
+
+Ident→  IDENT 
+
+Declaration --> IDENTIFIERS -> [colon] -> -> integer | -> IDENTIFIERS -> [colon] -> array ->  [l bracket] ->  number -> [right bracket] -> of -> integer
+IDENTIFIERS → identifier - >  [comma]   -> IDENTIFIERS | [epsilon]
+
+Statement --> STATEMENT_VAR | STATEMENT_IF | STATEMENT_IF_ELSE | STATEMENT_WHILE | STATEMENT_DO | STATEMENT_FOREACH | STATEMENT_READ | STATEMENT_WRITE | STATEMENT_CONTINUE | STATEMENT_RETURN
+
+STATEMENT_VAR --> Var -> [colon-equals] -> Expression
+STATEMENT_IF --> if -> Bool-Exp -> then -> STATEMENTS -> endif
+STATEMENT_IF_ELSE --> if -> Bool-Exp -> then -> STATEMENTS -> else -> STATEMENTS ->endif
+
+STATEMENT_IF1 --> STATEMENT_IF1A -> endif  | STATEMENT_IF1B -> endif
+    STATEMENT_IFA --> Statement -> [semicolon] -> FUNCTION2 ->
+    STATEMENT_IFB --> else -> Statement -> [semicolon] -> FUNCTION2 -> endif
+    
+ 
+STATEMENT_WHILE --> while -> Bool-Expr -> beginloop -> Statements -> endloop
+STATEMENT_DO --> do -> beginloop -> Statements ->  endloop -> while -> bool_expr
+
+STATEMENT_FOREACH --> foreach -> identifier -> in -> identifier -> beginloop -> Statements -> endloop
+
+Vars ->  var | var COMMA vars
+STATEMENT_READ -->  read -> Vars 
+STATEMENT_WRITE -->  write -> Vars
+STATEMENT_CONTINUE --> continue
+STATEMENT_RETURN --> return -> Expression
+
+
+
+
+Bool-Expr --> Relation-and-Expr  | Relation-And-Expr -> or -> Bool-Expr
+
+Relation-And-Expr-- Relation_Expr | Relation_Expr -> and -> Relation-And-Expr
+
+Relation-Expr --> RELATION-EXPR-EXPR | RELATION-EXPR-TRUE | RELATION-EXPR-FALSE | RELATION-EXPR-PAREN | not -> RELATION-EXPR-EXPR | not -> RELATION-EXPR-TRUE | not -> RELATION-EXPR-FALSE | not -> RELATION-EXPR-PAREN 
+
+RELATION-EXPR-EXPR --> Expression -> Comp -> Expression
+RELATION-EXPR-TRUE --> true
+RELATION-EXPR-FALSE --> false
+RELATION-EXPR-PAREN --> [left paren] -> Bool-Expr -> [right paren]
+
+COMP --> [equal-equal] | [left-angle-bracket-and-right-angle-bracket] | [left-angle-bracket] | [right-angle-bracket] | [left-angle-bracket-equal] | [right-angle-bracket-equal]
+
+Expression --> Mutiplicative-Expr | Muliplicative-Expr -> add -> Expression | Multiplicative-Expr -> sub -> Expression 
+
+Multiplicative-Expr --> Term |  Term ->  [mult] -> MULTIPLICATIVE-EXPR |  Term ->  [div] -> MULTIPLICATIVE-EXPR |  Term ->  [mod] -> MULTIPLICATIVE-EXPR
+
+Expressions--> expression -> [comma] -> Expressions | expression 
+
+Term --> Var | number | [left-paren] -> Expression -> [right-paren] | [sub] Var | [sub] number | [sub] [left-paren] -> Expression -> [right-paren] | identifier -> [left-paren**] -> Expression-> [right-paren]
+
+Var --> identifier | identifier -> [left-bracket] -> Expresion -> [right-bracket]
+
+
