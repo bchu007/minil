@@ -1,0 +1,10 @@
+CS152 Project Phase 2: Parser Using Bison
+
+To run MIMIL parser 
+
+1. Compile files with Makefile, 'make'
+2. run it with MINILfile 
+    -> cat [minil file] | mini
+
+The current minilfile is mytest.min
+
