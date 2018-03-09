@@ -5,16 +5,17 @@ OBJS	= bison.o lex.o main.o
 CC	= g++
 CFLAGS	= -g -Wall -ansi -pedantic
 
-gen:		$(OBJS)
-		$(CC) $(CFLAGS) $(OBJS) -o gen -lfl
-
+mini:		$(OBJS)
+		$(CC) $(CFLAGS) $(OBJS) -o mini -lfl
 
 lex.o:		lex.c
 		$(CC) $(CFLAGS) -c lex.c -o lex.o
 
-lex.c:		mini.lex
+lex.c:		mini.lex 
 		flex mini.lex
-		cp le.yy.c lex.c
+		cp lex.yy.c lex.c
+		rm -f lex.yy
+		
 
 bison.o:	bison.c
 		$(CC) $(CFLAGS) -c bison.c -o bison.o
@@ -25,13 +26,11 @@ bison.c:	mini.y
 		cmp -s mini.tab.h tok.h || cp mini.tab.h tok.h
 
 main.o:		main.cc
-		$(CC) $(CFLAGS) -c main.cc -o  main.o
+		$(CC) $(CFLAGS) -c main.cc -o main.o
 
-lex.o yac.o main.o 	: heading.h
+lex.o yac.o main.o	: heading.h
 lex.o main.o		: tok.h
 
 clean:
 	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h mini.tab.c mini.tab.h mini.output mini
 
-
- 
