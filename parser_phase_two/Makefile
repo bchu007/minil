@@ -30,5 +30,5 @@ lex.o yac.o main.o	: heading.h
 lex.o main.o		: tok.h
 
 clean:
-	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h mini.tab.c mini.tab.h mini.output mini
+	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h mini.tab.c mini.tab.h mini.output mini output.txt
 

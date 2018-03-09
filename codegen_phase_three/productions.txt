@@ -2,6 +2,9 @@ Program --> Functions
 
 
 Functions -> [epsilon] | Function -> Functions 
+    { printf("functions"); }
+    
+	
 Function --> (function -> identifier -> [semicolon] -> beginparams) -> DECLARATIONS-> (endparams -> beginlocals) -> DECLARATIONS -> (endlocals -> beginbody) ->  STATEMENTS -> endbody
 DECLARATIONS--> (Declaration -> [semicolon]) -> DECLARATIONS | [epsilon] 
 STATEMENTS--> (Statement -> [semicolon]) -> STATEMENTS| [epsilon]
@@ -16,6 +19,8 @@ Statement --> STATEMENT_VAR | STATEMENT_IF | STATEMENT_IF_ELSE | STATEMENT_WHILE
 STATEMENT_VAR --> Var -> [colon-equals] -> Expression
 STATEMENT_IF --> if -> Bool-Exp -> then -> STATEMENTS -> endif
 STATEMENT_IF_ELSE --> if -> Bool-Exp -> then -> STATEMENTS -> else -> STATEMENTS ->endif
+    { Statement_If_Else.begin := newlabel();
+
 
 STATEMENT_IF1 --> STATEMENT_IF1A -> endif  | STATEMENT_IF1B -> endif
     STATEMENT_IFA --> Statement -> [semicolon] -> FUNCTION2 ->

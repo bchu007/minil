@@ -6,9 +6,15 @@
 int yyerror(const char *s);
 int yylex(void);
 
-vector<string> variables;
+vector<string> iList;
 queue<string> queue;
 stack<string> stack;
+
+
+struct declaration {
+    string val;
+    
+}
 %}
 
 %union{
@@ -71,7 +77,7 @@ stack<string> stack;
 %token		       	L_SQUARE_BRACKET
 %token		       	R_SQUARE_BRACKET
 %token		       	ASSIGN
-
+%type	<int_val>	INTEGER
 
 
 %%
@@ -84,9 +90,11 @@ functions:	/* epsilon */
 		;
 
 function:	FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY 
+		/*{ cout << "func " << *($2) << endl; } */
 		;
 
-ident:		IDENT {variables.push_back(*($1));}
+ident:		IDENT /*{cout << ". " << *($1) << endl;}*/
+		
 		;
 
 declarations:	/*epsilon*/  
@@ -97,11 +105,11 @@ statements:	/*epsilon*/
 		| statement SEMICOLON statements 
 		;
 
-identifiers:	ident 
-		| ident COMMA identifiers 
+identifiers:	ident  
+		| ident COMMA identifiers  
 		;
 
-declaration:	identifiers COLON INTEGER 
+declaration:	identifiers COLON INTEGER { cout << "= " << ($1) << ", " << ($3) << endl; }
 		| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
 		
 		;
@@ -177,7 +185,7 @@ term:		var
 		;
 
 
-var:	    ident 
+var:	    ident
 	    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET 
 	    ;
 
