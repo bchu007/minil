@@ -91,7 +91,7 @@ COM	"##".*[\n]
 ":" 	{printf("COLON\n");}		/* Colon     */
 ","	{printf("COMMA\n");}		/* Comma     */
 
-[ \n\t]+       {printf("%i\n", yytext);}	/* whitespace */
+[ \n\t]+       /*{printf("%i\n", yytext);}*/	/* whitespace */
 
 .              {printf("Error unrecognized symbol\n"); exit(0);}
 
@@ -101,6 +101,6 @@ COM	"##".*[\n]
 int main(int argc, char ** argv)
 {
    yylex();
-   printf("%x\n", charNum);
+   //printf("%x\n", charNum);
 }
 

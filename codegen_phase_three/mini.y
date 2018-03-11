@@ -3,18 +3,39 @@
 
 %{
 #include "heading.h"
+#include <vector>
 int yyerror(const char *s);
 int yylex(void);
 
-vector<string> iList;
-queue<string> queue;
-stack<string> stack;
 
-
-struct declaration {
-    string val;
-    
+string get_back(vector<string> s) {
+    string temp;
+    temp = s.back();
+    s.pop_back();
+    return temp;
 }
+
+int get_back(vector<int> i) {
+    int temp;
+    temp = i.back();
+    i.pop_back();
+    return temp;
+}
+
+void clear(int &x) {
+    x = 0;
+}
+    
+vector<string> ident_list;
+
+int declarations_cnt;
+int identifiers_cnt;
+vector<int> numDeclarations_list;
+vector<string> declarations_list;
+vector<int> numIdentifiers_list;
+vector<string> identifiers_list;
+
+
 %}
 
 %union{
@@ -89,31 +110,60 @@ functions:	/* epsilon */
 		| function functions  
 		;
 
-function:	FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY 
-		/*{ cout << "func " << *($2) << endl; } */
+funchead:	FUNCTION ident SEMICOLON { cout << "func " << identlist.back() << endl; identlist.pop_back(); }
 		;
 
-ident:		IDENT /*{cout << ". " << *($1) << endl;}*/
-		
+params:		BEGIN_PARAMS declarations END_PARAMS {inparams = true;}
 		;
 
-declarations:	/*epsilon*/  
-		| declaration SEMICOLON declarations 
+function:	funchead params BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY 
+		{ for(int i = 0; i <  identlist.size(); ++i) {cout << identlist.at(i) << " "; } }
+		;
+
+ident:		IDENT {
+		    // stores identifiers in ident list
+		    ident_list.push_back(*($1));
+		    }
 		;
 
 statements:	/*epsilon*/ 
 		| statement SEMICOLON statements 
 		;
 
-identifiers:	ident  
-		| ident COMMA identifiers  
+identifiers:	ident  {
+		    // pushes back the number of identifiers into list
+		    numIdentifiers_list.push_back(identifiers_cnt + 1);
+		    // clears counter 
+		    clear(identifiers_cnt);
+		    }
+		| ident COMMA identifiers {
+		    // increments number of idents in identifiers
+		    identifiers_cnt++;
+		    }
 		;
 
-declaration:	identifiers COLON INTEGER { cout << "= " << ($1) << ", " << ($3) << endl; }
+
+declaration:	identifiers COLON INTEGER {
+		    // for all identifiers 
+		    for(int i = 0; i < numDeclerations_list.back();
+		    }
 		| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
-		
+		    
 		;
 
+
+
+declarations:	/*epsilon*/  {   
+		    // pushes back the number of declerations into list;
+		    numDeclarations_list.push_back(declarations_cnt); 
+		    // clears counter
+		    clear(declerations_cnt);
+		    }
+		| declaration SEMICOLON declarations {      
+		    //increments the number of declerations
+		    declarations_cnt++; 
+		    }
+		;
 
 
 vars:		var 
@@ -167,12 +217,12 @@ multiplicative_expr:    term
 			;
 
 expression:	multiplicative_expr 
-		| multiplicative_expr ADD expression {E.place = newtemp(); generate(E.place, ':=', E1.place, '+', E2.place) }
+		| multiplicative_expr ADD expression {}
 		| multiplicative_expr SUB expression 
 		;
 
-expressions:	expression 
-		| expression COMMA expression 
+expressions:	expression {paramnum++; }
+		| expression COMMA expression {cout << "
 		;
 
 term:		var 
@@ -181,7 +231,7 @@ term:		var
 		| SUB NUMBER 
 		| SUB L_PAREN expression R_PAREN 	
 
-		| ident L_PAREN expressions R_PAREN 
+		| ident L_PAREN expressions R_PAREN { cout << "call " << identlist.back()<< endl; identlist.pop_back();}//function call
 		;
 
 
