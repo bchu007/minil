@@ -110,45 +110,70 @@ functions:	/* epsilon */
 		| function functions  
 		;
 
-funchead:	FUNCTION ident SEMICOLON { cout << "func " << identlist.back() << endl; identlist.pop_back(); }
+funchead:	FUNCTION ident SEMICOLON {
+		     cout << "func " << get_back(ident_list)  << endl;
+		}
 		;
 
-params:		BEGIN_PARAMS declarations END_PARAMS {inparams = true;}
+params:		BEGIN_PARAMS declarations END_PARAMS {
+		}
 		;
 
-function:	funchead params BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY 
-		{ for(int i = 0; i <  identlist.size(); ++i) {cout << identlist.at(i) << " "; } }
+function:	funchead params BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY {
+		    for(int i = 0; i <  ident_list.size(); ++i) { 
+		    }
+		}
 		;
 
 ident:		IDENT {
 		    // stores identifiers in ident list
 		    ident_list.push_back(*($1));
-		    }
+		    cout << "test IDENT -> " << *($1) << endl;
+		}
 		;
 
-statements:	/*epsilon*/ 
-		| statement SEMICOLON statements 
-		;
 
-identifiers:	ident  {
+identifiers:	ident {
 		    // pushes back the number of identifiers into list
+		    cout << "final " << identifiers_cnt + 1 << endl;
 		    numIdentifiers_list.push_back(identifiers_cnt + 1);
-		    // clears counter 
-		    clear(identifiers_cnt);
-		    }
+		    
+		    //cout << endl;
+		    		    
+	
+		}
 		| ident COMMA identifiers {
 		    // increments number of idents in identifiers
-		    identifiers_cnt++;
-		    }
+		        identifiers_cnt++;
+			numIdentifiers_list.back() += 1;
+			cout << "his" << identifiers_cnt <<   endl;
+		}
 		;
 
 
 declaration:	identifiers COLON INTEGER {
-		    // for all identifiers 
-		    for(int i = 0; i < numDeclerations_list.back();
-		    }
-		| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
+		    // gets the number of identifiers in this declaration
+		    int numidents = get_back(numIdentifiers_list);
 		    
+		    // prints out all identifiers of integer declaration
+		    for(int i = numidents; i > 0; --i) {
+		        cout << ". " << ident_list.end()[-1 * i]  << endl;
+		    }
+		    // clears counter 
+		    clear(identifiers_cnt);
+		}
+		| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
+		    // gets the number of identifiers in this declaration
+		    int numidents = get_back(numIdentifiers_list);
+		    
+		    //prints out all identifiers of integer array declaration
+		    for(int i = numidents; i > 0; --i) {
+			cout << ".[] " << ident_list.end()[-1 * i] <<  ", " << $5 << endl;
+		    }
+		    //clears counter
+		    clear(identifiers_cnt);
+		    
+		}
 		;
 
 
@@ -156,8 +181,9 @@ declaration:	identifiers COLON INTEGER {
 declarations:	/*epsilon*/  {   
 		    // pushes back the number of declerations into list;
 		    numDeclarations_list.push_back(declarations_cnt); 
+		    
 		    // clears counter
-		    clear(declerations_cnt);
+		    clear(declarations_cnt);
 		    }
 		| declaration SEMICOLON declarations {      
 		    //increments the number of declerations
@@ -167,76 +193,181 @@ declarations:	/*epsilon*/  {
 
 
 vars:		var 
-		| var COMMA vars 
+		| var COMMA vars {
+		
+		}
 		; 
 
 
 
-bool_expr:	relation_and_expr 
-		| relation_and_expr OR bool_expr 
+
+statements:	/*epsilon*/ 
+		| statement SEMICOLON statements 
 		;
 
 statement:	var ASSIGN expression 
-		| IF bool_expr THEN statements ELSE statements ENDIF { }
-		| IF bool_expr THEN statements ENDIF 
-		| WHILE bool_expr BEGINLOOP statements ENDLOOP  
-		| DO BEGINLOOP statements ENDLOOP WHILE bool_expr 
-		| FOREACH ident IN ident BEGINLOOP statements ENDLOOP 
-		| READ vars 
-		| WRITE vars 
-		| CONTINUE 
-		| RETURN expression 
+		| IF bool_expr THEN statements ELSE statements ENDIF {
+		    // If / Else if statement
+		}
+		| IF bool_expr THEN statements ENDIF {
+		    // If statement 
+		}
+		| WHILE bool_expr BEGINLOOP statements ENDLOOP {
+		    // while loop   
+		} 
+		| DO BEGINLOOP statements ENDLOOP WHILE bool_expr {
+		    // Do while loop
+		}
+		| FOREACH ident IN ident BEGINLOOP statements ENDLOOP {
+		    // for each?
+		}
+		| READ vars {
+		    // read vars
+		}
+		| WRITE vars {
+		    // write vars
+		}
+		| CONTINUE {
+		    // continue
+		}
+		| RETURN expression {
+		    // return expression   
+		} 
 		;
 
-relation_and_expr:  relation_expr 
-		    | relation_expr AND relation_and_expr 
-		    ;
 
+relation_expr: relation_expr_param_not {
+		// checks that relation_expr doesn't begin with NOT
+		}
+		| NOT relation_expr_param_not {
+		// checks that relation_expr does begin with NOT
 
-relation_expr:	expression comp	expression 
-		| NOT expression comp expression 
-		| TRUE 
-		| NOT TRUE 
-		| FALSE 
-		| NOT FALSE 
-		| L_PAREN bool_expr R_PAREN 
-		| NOT L_PAREN bool_expr R_PAREN 
+		}
 		;
+
+relation_expr_param: relation_expr_not {
+		// checks if relation_expr_not lacks surrounding parens
+		}
+		| L_PAREN relation_expr_not R_PAREN {
+		// check if relation_expr_not contains parens
+
+		}
+		;
+
+relation_expr_not: expression comp expression {
+		// checks if realtion_expr is true or false based on e1 and e2
+		// create temp variable (dest) to store the comparison
+		}
+		| TRUE {
+		// sets relation_expr to be true
+
+		}
+		| FALSE {
+		// sets relation_expr to be false
+
+		} 
+		;
+
+
+relation_and_expr_next: /*epsilon*/ {
+    
+		}
+		| AND realtion_and_expr_next {
+			
+		}
+		;
+		    
+relation_and_expr: relation_expr relation_and_expr_next {
+		// starts AND 
+
+		}
+
+bool_expr_next:	/*epsilon*/ {
+		// finished with last OR statment in bool expression
+
+		} 
+		| OR bool_expr_next {
+		// increment number of bool expressions 
+
+		}
+		;
+
+bool_expr:	relation_and_expr bool_expr_next {
+		// start of a bool_expr
+			
+		}
+		; 
  
-comp:		EQ 
-		| NEQ 
-		| LT 
-		| GT 
-		| LTE 
-		| GTE 
+comp:		EQ {
+		
+		}
+		| NEQ {
+		
+		}
+		| LT {
+		
+		}
+		| GT {
+		
+		}
+		| LTE {
+		
+		}
+		| GTE {
+		
+		}
 		;
+
 multiplicative_expr:    term 
 			| term MULT multiplicative_expr 
 			| term DIV  multiplicative_expr
 			| term MOD  multiplicative_expr
 			;
 
-expression:	multiplicative_expr 
-		| multiplicative_expr ADD expression {}
-		| multiplicative_expr SUB expression 
+expression:	multiplicative_expr {
+		    // Last multiplicative expression 
+		}
+		| multiplicative_expr ADD expression {
+		    // Add arithmetic Operator Statement (+ dest, src1, src2)
+		}
+		| multiplicative_expr SUB expression {
+		    // Sub arithmetic Operator Statement (- dest, src1, src2)
+		}
 		;
 
-expressions:	expression {paramnum++; }
-		| expression COMMA expression {cout << "
+expressions:	expression {
+		    // function calls parameters
+		} 
+		| expression COMMA expressions 
 		;
 
-term:		var 
-		| NUMBER 
-		| L_PAREN expression R_PAREN 
-		| SUB NUMBER 
-		| SUB L_PAREN expression R_PAREN 	
+term:		var {
 
-		| ident L_PAREN expressions R_PAREN { cout << "call " << identlist.back()<< endl; identlist.pop_back();}//function call
+		}
+		| NUMBER {
+
+		}
+		| L_PAREN expression R_PAREN {
+
+		}
+		| SUB NUMBER {
+
+		}
+		| SUB L_PAREN expression R_PAREN {
+		    
+		}	
+		| ident L_PAREN expressions R_PAREN {
+
+		}
 		;
 
 
-var:	    ident
-	    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET 
+var:	    ident {
+
+	    }
+	    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
+
+	    }
 	    ;
 
 
