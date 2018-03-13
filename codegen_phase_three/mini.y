@@ -184,11 +184,11 @@ declarations:	/*epsilon*/  {
 		    
 		    // clears counter
 		    clear(declarations_cnt);
-		    }
+		}
 		| declaration SEMICOLON declarations {      
 		    //increments the number of declerations
 		    declarations_cnt++; 
-		    }
+		}
 		;
 
 
@@ -205,41 +205,96 @@ statements:	/*epsilon*/
 		| statement SEMICOLON statements 
 		;
 
-statement:	var ASSIGN expression 
-		| IF bool_expr THEN statements ELSE statements ENDIF {
+
+statement_assign: var ASSIGN expression{
+		// variable assignment		
+
+		}
+		;
+
+
+ifelse_if:
+
+
+ifelse_else:
+
+
+
+statement_ifelse: IF bool_expr THEN statements ELSE statements ENDIF {
+		
+
+		}	
+
+statement_if: IF bool_expr THEN statements ENDIF {
+
+		}	
+
+statement_while: WHILE bool_expr BEGINLOOP statements ENDLOOP {
+
+		}	
+
+statement_dowhile: DO BEGINLOOP statements ENDLOOP WHILE bool_expr  {
+
+		}	
+
+statement_foreach: FOREACH ident IN ident BEGINLOOP statements ENDLOO {
+
+		}	
+
+statement_read: READ vars {
+
+		}	
+
+statement_write: WRITE vars {
+
+		}	
+
+statement_continue: CONTINUE {
+
+		}	
+
+statement_return: RETURN expression {
+
+		}	
+
+
+
+
+statement:	statement_assign 
+		| statement_if_else {
 		    // If / Else if statement
 		}
-		| IF bool_expr THEN statements ENDIF {
+		| statement_if {
 		    // If statement 
 		}
-		| WHILE bool_expr BEGINLOOP statements ENDLOOP {
+		| statement_while {
 		    // while loop   
 		} 
-		| DO BEGINLOOP statements ENDLOOP WHILE bool_expr {
+		| statement_do_while {
 		    // Do while loop
 		}
-		| FOREACH ident IN ident BEGINLOOP statements ENDLOOP {
+		| statement_foreach {
 		    // for each?
 		}
-		| READ vars {
+		| statement_read {
 		    // read vars
 		}
-		| WRITE vars {
+		| statement_write {
 		    // write vars
 		}
-		| CONTINUE {
+		| statement_continue {
 		    // continue
 		}
-		| RETURN expression {
+		| statement_return {
 		    // return expression   
 		} 
 		;
 
 
-relation_expr: relation_expr_param_not {
+relation_expr: relation_expr_param {
 		// checks that relation_expr doesn't begin with NOT
 		}
-		| NOT relation_expr_param_not {
+		| NOT relation_expr_param {
 		// checks that relation_expr does begin with NOT
 
 		}
@@ -255,6 +310,7 @@ relation_expr_param: relation_expr_not {
 		;
 
 relation_expr_not: expression comp expression {
+		    cout << "expression comp expression" << endl;
 		// checks if realtion_expr is true or false based on e1 and e2
 		// create temp variable (dest) to store the comparison
 		}
@@ -270,31 +326,31 @@ relation_expr_not: expression comp expression {
 
 
 relation_and_expr_next: /*epsilon*/ {
-    
+		    cout << "relation and next finish" << endl;
 		}
-		| AND realtion_and_expr_next {
-			
+		| AND relation_and_expr {
+		    cout << "relation and next inc" << endl;
 		}
 		;
 		    
 relation_and_expr: relation_expr relation_and_expr_next {
 		// starts AND 
-
+		    cout << "starts and" << endl;
 		}
 
 bool_expr_next:	/*epsilon*/ {
 		// finished with last OR statment in bool expression
-
+		    cout << "bool next finsih"<< endl;
 		} 
-		| OR bool_expr_next {
+		| OR bool_expr {
 		// increment number of bool expressions 
-
+		    cout << "bool next inc" << endl;
 		}
 		;
 
 bool_expr:	relation_and_expr bool_expr_next {
 		// start of a bool_expr
-			
+		    cout << "bool expr" << endl;	
 		}
 		; 
  
@@ -318,19 +374,33 @@ comp:		EQ {
 		}
 		;
 
-multiplicative_expr:    term 
-			| term MULT multiplicative_expr 
-			| term DIV  multiplicative_expr
-			| term MOD  multiplicative_expr
-			;
 
-expression:	multiplicative_expr {
+multiplicative_expr: term multiplicative_expr_next {
+
+		}
+
+multiplicative_expr_next: /*epsilon*/ {
+		}
+		| MULT multiplicative_expr {
+		}
+		| DIV  multiplicative_expr {
+		}
+		| MOD  multiplicative_expr {
+		}
+		;
+
+expression: multiplicative_expr  expression_next{
+		
+		}
+		;
+
+expression_next: /*epsilon*/ {
 		    // Last multiplicative expression 
 		}
-		| multiplicative_expr ADD expression {
+		| ADD expression {
 		    // Add arithmetic Operator Statement (+ dest, src1, src2)
 		}
-		| multiplicative_expr SUB expression {
+		| SUB expression {
 		    // Sub arithmetic Operator Statement (- dest, src1, src2)
 		}
 		;
@@ -357,7 +427,7 @@ term:		var {
 		    
 		}	
 		| ident L_PAREN expressions R_PAREN {
-
+		    cout << "ident found" << endl;
 		}
 		;
 
