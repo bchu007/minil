@@ -381,7 +381,7 @@ term:		var {
 		| ident L_PAREN expressions R_PAREN { //FUNCTIONS
 		    //cout<< "in term ident (expression)" << endl;
 		    add_temp("int");
-		    //check if id exists 
+		    //TODO:check if id exists 
 		    buff.push_back("call " + *($1) + ", " + last_temp_name);
 		    add_op(last_temp_name);
 		    
