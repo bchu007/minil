@@ -29,6 +29,7 @@ vector<string> param_table;
 vector<string> buff;
 string last_temp_name;
 bool is_param = false;
+bool is_local = false;
 
 void add_object(string n, string t = "null", int v = 1) {
     object *x = new object();
@@ -80,6 +81,12 @@ string get_op_val() {
 	exit(1);
     }
 }
+
+void write(string s) {
+    buff.push_back(s);
+}
+
+
 
 %}
 
@@ -135,8 +142,19 @@ params_start:	BEGIN_PARAMS {
 		    is_param = true;
 		}
 		;
+begin_locals:	BEGIN_LOCALS {
+		    cout<< "in begin_locals" << endl;
+		    is_local = true;
+		}
+		;
 
-function:	funchead params_start declarations params_end BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY {
+end_locals:	END_LOCALS {
+		    cout<< "in end_locals" << endl;
+		    is_local = false;
+		}
+		;
+
+function:	funchead params_start declarations params_end begin_locals declarations end_locals BEGIN_BODY statements END_BODY {
 		    //cout<< "in function" << endl;
 		}
 		;
@@ -186,13 +204,26 @@ declarations:	/*epsilon*/  {
 		;
 
 
-vars:		var {
-		    //cout<< "in vars var" << endl;
+read_vars:	var {
+		    cout<< "in read_vars var" << endl;
+		    write(".< " + get_op_val());
 		}
-		| var COMMA vars {
+		| var COMMA read_vars {
+		    cout<< "in read_vars var comma" << endl;
+		    write(".< " + get_op_val());
+		}
+		; 
+
+write_vars:	var {
+		    cout<< "in write_vars var" << endl;
+		    //write(
+		}
+		| var COMMA write_vars {
+		    cout<< "in write_vars var comma" << endl;
 		
 		}
 		; 
+
 
 
 
@@ -201,33 +232,45 @@ statements:	/*epsilon*/
 		| statement SEMICOLON statements 
 		;
 
-statement:	var ASSIGN expression 
+statement:	var ASSIGN expression {
+		    cout<< "in statment var assign expression" << endl;
+
+		} 
 		| IF bool_expr THEN statements ELSE statements ENDIF {
 		    // If / Else if statement
+		    cout<< "in statement if then else" << endl;
 		}
 		| IF bool_expr THEN statements ENDIF {
 		    // If statement 
+		    cout<< "in statement if then" << endl;
 		}
 		| WHILE bool_expr BEGINLOOP statements ENDLOOP {
 		    // while loop   
+		    cout<< "in statement while loop" << endl;
 		} 
 		| DO BEGINLOOP statements ENDLOOP WHILE bool_expr {
 		    // Do while loop
+		    cout<< "in statement do while loop" << endl;
 		}
 		| FOREACH ident IN ident BEGINLOOP statements ENDLOOP {
 		    // for each?
+		    cout<< "in statement foreach loop" << endl;
 		}
-		| READ vars {
+		| READ read_vars {
 		    // read vars
-		}
-		| WRITE vars {
+		    cout<< "in statement read vars" << endl;		
+    		}
+		| WRITE write_vars {
 		    // write vars
+		    cout<< "in statement write vars" << endl;
 		}
 		| CONTINUE {
 		    // continue
+		    cout<< "in statement continue" << endl;
 		}
 		| RETURN expression {
 		    // return expression   
+		    cout<< "in statement return expression" << endl;
 		} 
 		;
 
@@ -296,93 +339,94 @@ bool_expr:	relation_and_expr bool_expr_next {
 		; 
  
 comp:		EQ {
-		    //cout<< "in comp eq" << endl;
+		    cout<< "in comp eq" << endl;
 		}
 		| NEQ {
-		    //cout<< "in comp neq" << endl;
+		    cout<< "in comp neq" << endl;
 		}
 		| LT {
-		    //cout<< "in comp lt" << endl;
+		    cout<< "in comp lt" << endl;
 		}
 		| GT {
-		    //cout<< "in comp gt" << endl;
+		    cout<< "in comp gt" << endl;
 		}
 		| LTE {
-		    //cout<< "in comp lte" << endl;
+		    cout<< "in comp lte" << endl;
 		}
 		| GTE {
-		    //cout<< "in comp gte" << endl;
+		    cout<< "in comp gte" << endl;
 		}
 		;
 
 multiplicative_expr:    term {
-			    //cout<< "in muliplicative_expr term" << endl;
+			    cout<< "in muliplicative_expr term" << endl;
 			}
 			| term MULT multiplicative_expr  {
-			    //cout<< "in multiplicative_expr term mult" << endl;
+			   cout<< "in multiplicative_expr term mult" << endl;
 			}
 			| term DIV  multiplicative_expr {
-			    //cout<< "in multiplicative_expr term div" << endl;
+			    cout<< "in multiplicative_expr term div" << endl;
 			}
 			| term MOD  multiplicative_expr {
-			    //cout<< "in multiplicative_expr term mod" << endl;
+			    cout<< "in multiplicative_expr term mod" << endl;
 			}
 			;
 
 expression:	multiplicative_expr {
-		    //cout<< "in expression multiplicative_expr" << endl;
+		    cout<< "in expression multiplicative_expr" << endl;
 		}
 		| multiplicative_expr ADD expression {
-		    //cout<< "in expression multiplicative_expr add" << endl;
+		    cout<< "in expression multiplicative_expr add" << endl;
 		}
 		| multiplicative_expr SUB expression {
-		    //cout<< "in expression multiplicative_expr sub" << endl;
+		    cout<< "in expression multiplicative_expr sub" << endl;
 		}
 		;
 
 expressions:	expression {
-		    //cout<< "in expressions expression" << endl;
+		    cout<< "in expressions expression" << endl;
 		} 
 		| expression COMMA expressions 
 		;
 
 term:		var {
-		    //cout<< "in term var" << endl;
+		    cout<< "in term var" << endl;
 		    
 		    add_temp("int");
 		    if(check_op_type() == "int") {
-			buff.push_back("= " + last_temp_name + get_op_val());
+			write("= " + last_temp_name + ", " + get_op_val());
 		    }
 		    else {
-			buff.push_back("=[] " + last_temp_name + get_op_val());
+			write("=[] " + last_temp_name + ". " + get_op_val());
 		    }
 		    add_op(last_temp_name);
+		    cout << " > " << buff.back() << endl;
 
 		}
 		| NUMBER {
-		    //cout<< "in term number" << endl;
+		    cout<< "in term number" << endl;
 		    add_op(SSTR($1));		    
 		}
 		| L_PAREN expression R_PAREN {
-		    //cout<< "in term (expression)" << endl;
+		    cout<< "in term (expression)" << endl;
 		    
 		}
 		| SUB NUMBER {
 		    add_op(SSTR($2 * -1));
-		    //cout<< "in term sub number" << endl;
+		    cout<< "in term sub number" << endl;
 
 		}
 		| SUB L_PAREN expression R_PAREN {
-		    //cout<< "in term sub (expression)" << endl;
+		    cout<< "in term sub (expression)" << endl;
 		    add_temp("int");
-		    buff.push_back("- " + last_temp_name + ", 0, " + get_op_val());
+		    write("- " + last_temp_name + ", 0, " + get_op_val());
 		    add_op(last_temp_name);
 		}	
 		| ident L_PAREN expressions R_PAREN { //FUNCTIONS
-		    //cout<< "in term ident (expression)" << endl;
+		    cout<< "in term ident (expression)" << endl;
 		    add_temp("int");
 		    //TODO:check if id exists 
-		    buff.push_back("call " + *($1) + ", " + last_temp_name);
+		    write("call " + *($1) + ", " + last_temp_name);
 		    add_op(last_temp_name);
 		    
 		}
@@ -394,6 +438,7 @@ var:	    ident {
 		string id = "_" + *($1);
 		//TODO: check if id exists already
 		add_op(id);
+		cout << " <-- " << id << endl;
 		
 	    }
 	    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
@@ -401,6 +446,7 @@ var:	    ident {
 		string id = "_" + *($1);
 		//TODO: check if id exists already
 		add_op( id + ", " + get_op_val(), "arr<int>");
+		cout << " <--  []" << id << endl;
 	    }
 	    ;
 
