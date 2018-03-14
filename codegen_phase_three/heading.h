@@ -1,6 +1,6 @@
 /* heading.h */
 
-#define YY_NO_UNPUT
+//#define YY_NO_UNPUT
 
 using namespace std;
 
@@ -8,3 +8,4 @@ using namespace std;
 #include <stdio.h>
 #include <string>
 #include <cstdlib>
+#include <vector>
