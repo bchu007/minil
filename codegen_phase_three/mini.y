@@ -16,12 +16,18 @@ struct object {
     int size;
 };
 
+struct op {
+    string val;
+    string type;
+};
 
 vector<object> var_table;
 vector<string> func_table;
-vector<string> op_table;
+vector<op> op_table;
 vector<string> ident_stack;
 vector<string> param_table;
+vector<string> buff;
+string last_temp_name;
 bool is_param = false;
 
 void add_object(string n, string t = "null", int v = 1) {
@@ -44,14 +50,28 @@ string get_next_num() {
 void add_temp(string t = "null", int s = 1){
     object *x = new object();
     x->name = get_next_num();
+    last_temp_name = x->name;
     x->type = t;
     x->size = s;
     var_table.push_back(*x);
 }
 
-string get_op() {
+string check_op_type(){
+    return op_table.back().type;
+
+} 
+
+void add_op(string v, string t = "int") {
+    op *x = new op();
+    x->val = v;
+    x->type = t;
+    op_table.push_back(*x);
+
+}
+
+string get_op_val() {
     if(!op_table.empty()) {
-	string temp = op_table.back();
+	string temp = op_table.back().val;
 	op_table.pop_back();
 	return temp;	
     }
@@ -60,6 +80,7 @@ string get_op() {
 	exit(1);
     }
 }
+
 %}
 
 
@@ -78,7 +99,7 @@ string get_op() {
 %token	<op_val>    	IDENT
 
 %token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY
-%token INTEGER ARRAY OF IF THEN ENDIF ELSE WHILE DO FOREACH IN BEGINLOOP ENDLOOP CONTINUE READ WRITE TRUE FALSE SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET RETURN
+%token INTEGER ARRAY OF IF THEN ENDIF ELSE WHILE DO FOREACH IN BEGINLOOP ENDLOOP CONTINUE READ WRITE TRUE FALSE SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET RETURN 
 %left SUB ADD MULT DIV MOD
 %left EQ NEQ LT GT LTE GTE
 %right NOT
@@ -328,27 +349,42 @@ expressions:	expression {
 term:		var {
 		    //cout<< "in term var" << endl;
 		    
+		    add_temp("int");
+		    if(check_op_type() == "int") {
+			buff.push_back("= " + last_temp_name + get_op_val());
+		    }
+		    else {
+			buff.push_back("=[] " + last_temp_name + get_op_val());
+		    }
+		    add_op(last_temp_name);
 
 		}
 		| NUMBER {
 		    //cout<< "in term number" << endl;
-		
+		    add_op(SSTR($1));		    
 		}
 		| L_PAREN expression R_PAREN {
 		    //cout<< "in term (expression)" << endl;
-
+		    
 		}
 		| SUB NUMBER {
+		    add_op(SSTR($2 * -1));
 		    //cout<< "in term sub number" << endl;
 
 		}
 		| SUB L_PAREN expression R_PAREN {
 		    //cout<< "in term sub (expression)" << endl;
-
+		    add_temp("int");
+		    buff.push_back("- " + last_temp_name + ", 0, " + get_op_val());
+		    add_op(last_temp_name);
 		}	
-		| ident L_PAREN expressions R_PAREN {
+		| ident L_PAREN expressions R_PAREN { //FUNCTIONS
 		    //cout<< "in term ident (expression)" << endl;
-
+		    add_temp("int");
+		    //check if id exists 
+		    buff.push_back("call " + *($1) + ", " + last_temp_name);
+		    add_op(last_temp_name);
+		    
 		}
 		;
 
@@ -356,13 +392,15 @@ term:		var {
 var:	    ident {
 		//cout<< "in var ident" << endl; 
 		string id = "_" + *($1);
-		op_table.push_back(id);
+		//TODO: check if id exists already
+		add_op(id);
 		
 	    }
 	    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
 		//cout<< "in var ident[expression]" << endl;
 		string id = "_" + *($1);
-		op_table.push_back("[] " + id + ", " + get_op());
+		//TODO: check if id exists already
+		add_op( id + ", " + get_op_val(), "arr<int>");
 	    }
 	    ;
 
