@@ -3,61 +3,77 @@
 
 %{
 #include "heading.h"
+#include <sstream>
+
+#define SSTR( x ) static_cast< std::ostringstream & >( std::ostringstream() << std::dec << x ).str()
+
 int yyerror(const char *s);
 int yylex(void);
 
+struct object {
+    string name;
+    string type;
+    int size;
+};
 
 
+vector<object> var_table;
+vector<string> func_table;
+vector<string> op_table;
+vector<string> ident_stack;
+vector<string> param_table;
+bool is_param = false;
 
+void add_object(string n, string t = "null", int v = 1) {
+    object *x = new object();
+    x->name = n;
+    x->type = t;
+    x->size = v;
+    var_table.push_back(*x); 
+} 
 
-
-int get_back(vector<int> i) {
-    int temp;
-    temp = i.back();
-    i.pop_back();
+string get_next_num() {
+    static int global_temp_num = 0;
+    string temp = "t" + SSTR(global_temp_num);
+    global_temp_num += 1;
     return temp;
 }
 
-void clear(int &x) {
-    x = 0;
+// adds a temp variable 
+//  *params: takes in type and size
+void add_temp(string t = "null", int s = 1){
+    object *x = new object();
+    x->name = get_next_num();
+    x->type = t;
+    x->size = s;
+    var_table.push_back(*x);
 }
-    
-vector<string> ident_list;
 
-int declarations_cnt;
-int identifiers_cnt;
-vector<int> numDeclarations_list;
-vector<string> declarations_list;
-vector<int> numIdentifiers_list;
-vector<string> identifiers_list;
-
-
-
+string get_op() {
+    if(!op_table.empty()) {
+	string temp = op_table.back();
+	op_table.pop_back();
+	return temp;	
+    }
+    else {
+	cout << "ERROR: no op in op table" << endl;
+	exit(1);
+    }
+}
 %}
-%code requires {
-    struct sym {
-	string val;
-	string type;
-	sym() {}
-	sym(string v, string t) : val(v), type(t = "") {}
-    };
-   
 
-}
 
 %union{
   int		int_val;
   string*	op_val;
   char*		code;
-  struct sym*	sym_val;
 }
 
 %error-verbose
 
 %start program
 
-%type	<op_val>	ident
-%type	<sym_val>	declarations
+%type	<op_val>	ident	
 %token	<int_val>	NUMBER 
 %token	<op_val>    	IDENT
 
@@ -89,11 +105,13 @@ funchead:	FUNCTION ident SEMICOLON {
 
 params_end:	END_PARAMS {
 		    //cout<< "in prams params_end" << endl;
+		    is_param = false;
 		}
 		;
 
 params_start:	BEGIN_PARAMS {
 		    //cout<< "in params params_start" << endl;
+		    is_param = true;
 		}
 		;
 
@@ -109,20 +127,31 @@ ident:		IDENT {
 
 
 identifiers:	ident {
-		    cout << " > " << *$1 << endl; 	
+		    ident_stack.clear();
+		    ident_stack.push_back(*$1);
+		    if(is_param) {
+			param_table.push_back("_" + *($1));
+		    }
 		}
 		| ident COMMA identifiers {
-		    cout << " > " << *$1 << endl;
+		    ident_stack.push_back(*$1);
 		}
 		;
 
 
 declaration:	identifiers COLON INTEGER {
-		//cout<< "in declaration colon integer" << endl;
-		
+		    cout<< "in declaration colon integer" << endl;
+		    while(!ident_stack.empty()) {
+			add_object("_" + ident_stack.back(), "int");
+			ident_stack.pop_back();
+		    }
 		}
 		| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
-		//cout<< "in declaration colon array" << endl;
+		    cout<< "in declaration colon array" << endl;
+		    while(!ident_stack.empty()) {
+			add_object("_" + ident_stack.back(), "arr<int>", $5);
+			ident_stack.pop_back();
+		    }
 		}
 		;
 
@@ -298,6 +327,7 @@ expressions:	expression {
 
 term:		var {
 		    //cout<< "in term var" << endl;
+		    
 
 		}
 		| NUMBER {
@@ -325,15 +355,21 @@ term:		var {
 
 var:	    ident {
 		//cout<< "in var ident" << endl; 
-
+		string id = "_" + *($1);
+		op_table.push_back(id);
+		
 	    }
 	    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
 		//cout<< "in var ident[expression]" << endl;
+		string id = "_" + *($1);
+		op_table.push_back("[] " + id + ", " + get_op());
 	    }
 	    ;
 
 
 %%
+
+
 
 int yyerror(string s) {
     //extern int yylineno;	/* defined and maintained in lex.c */
