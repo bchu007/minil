@@ -235,6 +235,8 @@ statements:	/*epsilon*/
 statement:	var ASSIGN expression {
 		    cout<< "in statment var assign expression" << endl;
 
+		    
+
 		} 
 		| IF bool_expr THEN statements ELSE statements ENDIF {
 		    // If / Else if statement
@@ -362,13 +364,28 @@ multiplicative_expr:    term {
 			    cout<< "in muliplicative_expr term" << endl;
 			}
 			| term MULT multiplicative_expr  {
-			   cout<< "in multiplicative_expr term mult" << endl;
-			}
+			    cout<< "in multiplicative_expr term mult" << endl;
+			    add_temp("int");
+			    string op2 = get_op_val();
+			    string op1 = get_op_val();
+			    write("* " + last_temp_name + ", " + op1 + ", " + op2);
+			    add_op(last_temp_name);
+		    	}
 			| term DIV  multiplicative_expr {
 			    cout<< "in multiplicative_expr term div" << endl;
+			    add_temp("int");
+			    string op2 = get_op_val();
+			    string op1 = get_op_val();
+			    write("/ " + last_temp_name + ", " + op1 + ", " + op2);
+			    add_op(last_temp_name);
 			}
 			| term MOD  multiplicative_expr {
 			    cout<< "in multiplicative_expr term mod" << endl;
+			    add_temp("int");
+			    string op2 = get_op_val();
+			    string op1 = get_op_val();
+			    write("% " + last_temp_name + ", " + op1 + ", " + op2);
+			    add_op(last_temp_name);
 			}
 			;
 
@@ -377,16 +394,30 @@ expression:	multiplicative_expr {
 		}
 		| multiplicative_expr ADD expression {
 		    cout<< "in expression multiplicative_expr add" << endl;
+		    add_temp("int");
+		    string op2 = get_op_val();
+		    string op1 = get_op_val();
+		    write("+ " + last_temp_name + ", " + op1 + ", " + op2);
+		    add_op(last_temp_name);
 		}
 		| multiplicative_expr SUB expression {
 		    cout<< "in expression multiplicative_expr sub" << endl;
+		    add_temp("int");
+		    string op2 = get_op_val();
+		    string op1 = get_op_val();
+		    write("- " + last_temp_name + ", " + op1 + ", " + op2);
+		    add_op(last_temp_name);
 		}
 		;
 
 expressions:	expression {
 		    cout<< "in expressions expression" << endl;
+
 		} 
-		| expression COMMA expressions 
+		| expression COMMA expressions {
+		    cout<< "in expressions expression comma expression" << endl;
+
+		} 
 		;
 
 term:		var {
