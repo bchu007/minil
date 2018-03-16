@@ -32,6 +32,8 @@ vector<vector<string> > loop_label;
 string last_temp_name;
 bool is_param = false;
 bool is_local = false;
+int global_temp_num = 0;
+int global_label_num = 0;
 
 
 void add_object(string n, string t = "null", int v = 1) {
@@ -43,14 +45,14 @@ void add_object(string n, string t = "null", int v = 1) {
 } 
 
 string get_next_num() {
-    static int global_temp_num = 0;
+    //static int global_temp_num = 0;
     string temp = "t" + SSTR(global_temp_num);
     global_temp_num += 1;
     return temp;
 }
 
 string get_next_label() {
-    static int global_label_num = 0;
+    //static int global_label_num = 0;
     string temp = "L" + SSTR(global_label_num);
     global_label_num += 1;
     return temp;
@@ -239,16 +241,19 @@ function:	funchead params_start declarations params_end begin_locals declaration
 			else {
 			    cout << ".[] " << var_table.at(i).name << endl;
 			}
+			//var_table.erase(var_table.begin());
 		    }
 		    for(unsigned int i=0; i < buff.size(); ++i) {
 			if(buff.at(i).at(0) == ':' && buff.at(i).at(1) == ' '){
 			    cout << buff.at(i) << endl;
 			}
 			else {
-			    cout << "" <<  buff.at(i) << endl;
+			    cout << buff.at(i) << endl;
 			}
+			
 		    }
-
+		    buff.clear();
+		    var_table.clear();
 		    cout << "endfunc" << endl << endl;
 		}
 		;
