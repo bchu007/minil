@@ -1,5 +1,9 @@
-func fibonacci
+func main
+. _n
+. _i
+. _j
 . _k
+.[] _t
 . t0
 . t1
 . t2
@@ -8,32 +12,103 @@ func fibonacci
 . t5
 . t6
 . t7
-= _k, $0
-<= t0, _k, 1
-?:= L0, t0
-:= L1
-: L0
-ret 1
-: L1
-- t1, _k, 1
-param t2
-call fibonacci, t3
-- t4, _k, 2
-param t5
-call fibonacci, t6
-+ t7, t1, t4
-ret t7
-endfunc
-
-func main
-. _n
-. _fib_n
 . t8
 . t9
-.< _n
-param t8
-call fibonacci, t9
-= _fib_n, _n
-.> _fib_n
+. t10
+. t11
+. t12
+. t13
+. t14
+. t15
+. t16
+. t17
+. t18
+. t19
+. t20
+. t21
+. t22
+. t23
+. t24
+. t25
+: start 
+    .< _j
+    .< _i
+    = _k, 0
+    = _n, 20
+: L0
+    []= _t, _k, _k
+    + t0, _k, 1
+    = _k, t0
+    % t1, _k, 2
+    == t2, t1, 0
+    ?:= L2, t2
+    := L3
+: L2
+    := L1
+: L3
+    - t3, _k, 1
+    .[]> _t, t3
+: L1
+    < t4, _k, _n
+    ?:= L0, t4
+    < t5, _i, _j
+    < t6, _j, _n
+    >= t7, _i, 0
+    && t8, t6, t7
+    && t9, t5, t8
+    ?:= L5, t9
+    := L6
+: L5
+    * t10, _i, 2
+    []= _t, _i, t10
+    * t11, _j, 2
+    []= _t, _j, t11
+    = _k, _t, _i
+    []= _t, _i, _t, _j
+    []= _t, _j, _k
+: L8
+    >= t12, _i, _j
+    = t13, 0
+    || t14, t12, t13
+    ?:= L9, t14
+    := L10
+: L9
+    - t15, _i, _j
+    + t16, 1, t15
+    % t17, t16, 3
+    = _k, t17
+    - t18, _i, 1
+    = _i, t18
+    > t19, _k, 1
+    ?:= L11, t19
+    := L12
+: L11
+    := L8
+: L12
+    .> _k
+    := L8
+: L10
+    := L7
+: L6
+: L7
+    .> _k
+    .> _j
+    .> _i
+    < t20, _i, _n
+    >= t21, _i, 0
+    && t22, t20, t21
+    ?:= L14, t22
+    := L15
+: L14
+    .[]> _t, _i
+: L15
+    < t23, _j, _n
+    >= t24, _j, 0
+    && t25, t23, t24
+    ?:= L17, t25
+    := L18
+: L17
+    .[]> _t, _j
+: L18
 endfunc
 

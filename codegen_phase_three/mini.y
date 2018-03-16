@@ -266,14 +266,14 @@ function:	funchead params_start declarations params_end begin_locals declaration
 			}
 			else {
 			    //cout << "    " <<  buff.at(i) << endl;
-                            string tempString = buff.at(i) + "\n";
+                            string tempString = "    " + buff.at(i) + "\n";
                             superBuff.push_back(tempString);
 			}
 		    }
 
 		    if(!op_table.empty()){
 			//cout << "    ret " << get_op_val() << endl;
-                        string tempString = "ret " + get_op_val() + "\n";
+                        string tempString = "    ret " + get_op_val() + "\n";
                         superBuff.push_back(tempString);
 	  	    }
 		    //cout << "    endfunc" << endl << endl;
@@ -339,22 +339,41 @@ declarations:	/*epsilon*/  {
 
 read_vars:	var {
 		    //cout<< "in read_vars var" << endl;
-		    write(".< " + get_op_val());
+		    if(op_table.back().type == "int") {
+			write(".< " + get_op_val());
+		    }
+		    else {
+			write(".[]< " + get_op_val());
+		    }
 		}
 		| var COMMA read_vars {
 		    //cout<< "in read_vars var comma" << endl;
-		    write(".< " + get_op_val());
+		    if(op_table.back().type == "int") {
+			write(".< " + get_op_val());
+		    }
+		    else {
+			write(".[]< " + get_op_val());
+		    }
 		}
 		; 
 
 write_vars:	var {
 		    //cout<< "in write_vars var" << endl;
+		    if(op_table.back().type == "int") {
 			write(".> " + get_op_val());
+		    }
+		    else {
+			write(".[]> " + get_op_val());
+		    }
 		}
 		| var COMMA write_vars {
 		    //cout<< "in write_vars var comma" << endl;
+		    if(op_table.back().type == "int") {
 			write(".> " + get_op_val());
-		
+		    }
+		    else {
+			write(".[]> " + get_op_val());
+		    }		
 		}
 		; 
 
@@ -432,7 +451,8 @@ statement:	var ASSIGN expression {
 			string op1 = get_op_val();
 			bool tempBool = in_var_table(op1);
 			if(!tempBool){
-			    ERROR("variable " + op1 + "not declared in this scope");
+			    //ERROR("variable " + op1 + "not declared in this scope");
+			    //cout << "error1: " << op1 << endl;
 			}
 			write("= " + op1 + ", " + op2);
 		    }
@@ -442,7 +462,8 @@ statement:	var ASSIGN expression {
 			write("[]= " + op1 + ", " + op2); 
 			bool tempBool = in_var_table(op1);
 			if(!tempBool){
-			    ERROR("variable" + op1 + "not declared in this scope");
+			    //ERROR("variable" + op1 + "not declared in this scope");
+			    //cout << "error2: " << op2 << endl;
 			}
 		    }
 		} 
@@ -722,11 +743,17 @@ term:		var {
 		    //if(!tempBool){
 		    //	ERROR("Function not declared in this scope");
                     //} 
-		    write("param " + last_temp_name);
-                    add_temp("int");
+		    string x;
+		    //if(!op_table.empty()){
+			//x = SSTR(op_table.size());
+		    //}
+		    //else {
+		x = last_temp_name;
+		    //}
+		    write("param " + get_op_val());
 		    add_op(last_temp_name);
                     write("call " + *($1) + ", " + get_op_val());
-		    
+		    add_op(last_temp_name);
 		}
 		;
 
