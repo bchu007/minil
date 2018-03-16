@@ -199,7 +199,7 @@ functions:	/* epsilon */
 		;
 
 funchead:	FUNCTION ident SEMICOLON {
-		     cout << " > " <<"func " << *$2 <<  endl;
+		     cout << "func " << *$2 <<  endl;
 		     write(": start ");
 		}
 		;
@@ -224,6 +224,8 @@ begin_locals:	BEGIN_LOCALS {
 end_locals:	END_LOCALS {
 		    //cout<< "in end_locals" << endl;
 		    is_local = false;
+		    
+		    
 		}
 		;
 
@@ -247,6 +249,10 @@ function:	funchead params_start declarations params_end begin_locals declaration
 			    cout << "    " <<  buff.at(i) << endl;
 			}
 		    }
+
+		    if(!op_table.empty())
+			cout << "    ret " << get_op_val() << endl;
+		    cout << "    endfunc" << endl << endl;
 		}
 		;
 
@@ -315,10 +321,11 @@ read_vars:	var {
 
 write_vars:	var {
 		    //cout<< "in write_vars var" << endl;
-		    //write(
+			write(".> " + get_op_val());
 		}
 		| var COMMA write_vars {
 		    //cout<< "in write_vars var comma" << endl;
+			write(".> " + get_op_val());
 		
 		}
 		; 
@@ -392,7 +399,6 @@ do_once:	do statements ENDLOOP {
 statement:	var ASSIGN expression {
 		    //cout<< "in statment var assign expression" << endl;
 		    //TODO: check if in table
-		    write("val next" );
 		    string op2 = get_op_val();
 		    if(check_op_type() == "int") {
 			string op1 = get_op_val();
@@ -690,6 +696,7 @@ term:		var {
                     //} 
 		    write("call " + *($1) + ", " + last_temp_name);
 		    add_op(last_temp_name);
+
 		    
 		}
 		;
@@ -715,7 +722,6 @@ var:	    ident {
 		    ERROR("variable is not defined in this scope");
 		}
 		add_op( id + ", " + get_op_val(), "arr<int>");
-		//cout << " >  []" << id << endl;
 	    }
 	    ;
 
