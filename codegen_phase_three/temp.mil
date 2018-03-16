@@ -8,6 +8,7 @@ func fibonacci
 . t5
 . t6
 . t7
+= _k, $0
 <= t0, _k, 1
 ?:= L0, t0
 := L1

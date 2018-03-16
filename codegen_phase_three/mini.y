@@ -34,7 +34,7 @@ bool is_param = false;
 bool is_local = false;
 int global_temp_num = 0;
 int global_label_num = 0;
-
+int param_num = 0;
 
 void add_object(string n, string t = "null", int v = 1) {
     object *x = new object();
@@ -218,6 +218,11 @@ params_start:	BEGIN_PARAMS {
 		;
 begin_locals:	BEGIN_LOCALS {
 		    //cout<< "in begin_locals" << endl;
+		    while(!param_table.empty()) {
+			write("= " + param_table.back() + ", $" + SSTR(param_num));
+			param_table.pop_back();
+			param_num++;
+		    }
 		    is_local = true;
 		}
 		;
