@@ -1,51 +1,61 @@
-
-
-----------CODEGEN START---------------
-
-
- > func fibonacci
-    . _k
-    . t0
-    . t1
-    . t2
-    . t3
-    . t4
-    . t5
-: start 
-    <= t0, _k, 1
-    ?:= L0, t0
-    := L1
+func fibonacci
+. _k
+. t0
+. t1
+. t2
+. t3
+. t4
+. t5
+. t6
+. t7
+<= t0, _k, 1
+?:= L0, t0
+:= L1
 : L0
+ret 1
 : L1
-    - t1, _k, 1
-    call fibonacci, t2
-    - t3, _k, 2
-    call fibonacci, t4
-    + t5, t3, t4
- > func main
-    . _k
-    . t0
-    . t1
-    . t2
-    . t3
-    . t4
-    . t5
-    . _n
-    . _fib_n
-    . t6
-: start 
-    <= t0, _k, 1
-    ?:= L0, t0
-    := L1
+- t1, _k, 1
+param t2
+call fibonacci, t3
+- t4, _k, 2
+param t5
+call fibonacci, t6
++ t7, t1, t4
+ret t7
+endfunc
+
+func main
+. _k
+. t0
+. t1
+. t2
+. t3
+. t4
+. t5
+. t6
+. t7
+. _n
+. _fib_n
+. t8
+. t9
+<= t0, _k, 1
+?:= L0, t0
+:= L1
 : L0
+ret 1
 : L1
-    - t1, _k, 1
-    call fibonacci, t2
-    - t3, _k, 2
-    call fibonacci, t4
-    + t5, t3, t4
-: start 
-    .< _n
-    call fibonacci, t6
-    val next
-    = _n, t6
+- t1, _k, 1
+param t2
+call fibonacci, t3
+- t4, _k, 2
+param t5
+call fibonacci, t6
++ t7, t1, t4
+ret t7
+.< _n
+param t8
+call fibonacci, t9
+= _fib_n, _n
+.> _fib_n
+endfunc
+

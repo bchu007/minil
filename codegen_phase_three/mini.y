@@ -200,7 +200,6 @@ functions:	/* epsilon */
 
 funchead:	FUNCTION ident SEMICOLON {
 		     cout << "func " << *$2 <<  endl;
-		     write(": start ");
 		}
 		;
 
@@ -234,11 +233,11 @@ function:	funchead params_start declarations params_end begin_locals declaration
 		    
 		    for(unsigned int i=0; i < var_table.size(); ++i) {
 			if(var_table.at(i).type == "int") {
-			    cout << "    . " << var_table.at(i).name << endl;
+			    cout << ". " << var_table.at(i).name << endl;
 
 			}
 			else {
-			    cout << "    .[] " << var_table.at(i).name << endl;
+			    cout << ".[] " << var_table.at(i).name << endl;
 			}
 		    }
 		    for(unsigned int i=0; i < buff.size(); ++i) {
@@ -246,13 +245,11 @@ function:	funchead params_start declarations params_end begin_locals declaration
 			    cout << buff.at(i) << endl;
 			}
 			else {
-			    cout << "    " <<  buff.at(i) << endl;
+			    cout << "" <<  buff.at(i) << endl;
 			}
 		    }
 
-		    if(!op_table.empty())
-			cout << "    ret " << get_op_val() << endl;
-		    cout << "    endfunc" << endl << endl;
+		    cout << "endfunc" << endl << endl;
 		}
 		;
 
@@ -469,6 +466,7 @@ statement:	var ASSIGN expression {
 		}
 		| RETURN expression {
 		    //cout<< "in statement return expression" << endl;
+		    write("ret " + get_op_val());
 		
 		} 
 		;
@@ -693,9 +691,11 @@ term:		var {
 		    //bool tempBool = in_func_table(*($1));
 		    //if(!tempBool){
 		    //	ERROR("Function not declared in this scope");
-                    //} 
-		    write("call " + *($1) + ", " + last_temp_name);
+                    //}
+		    write("param " + last_temp_name);
+		    add_temp("int");
 		    add_op(last_temp_name);
+		    write("call " + *($1) + ", " + get_op_val());
 
 		    
 		}
