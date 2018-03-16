@@ -14,7 +14,28 @@ int main(int argc, char **argv)
   }
   
   yyparse();
+  extern vector<string> superBuff;
+  extern bool if_err;
+  bool if_main = false;
 
+  for (unsigned int i = 0; i < superBuff.size(); i++){
+    if (superBuff.at(i).find("main") != string::npos){
+      if_main = true;
+      break;
+    }
+  }
+  if(!if_main){
+    cout << "ERROR: no main function declared";
+    return 1;
+  }
+  else if (if_err){
+    return 1;
+  }
+  else{
+    for (unsigned int i = 0; i < superBuff.size(); i++){
+      cout << superBuff.at(i);
+    }
+  }
   return 0;
 }
 

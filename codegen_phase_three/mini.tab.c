@@ -71,6 +71,9 @@
 void ERROR();
 int yyerror(const char *s);
 int yylex(void);
+bool if_err = false;
+vector<string> superBuff;
+
 
 struct object {
     string name;
@@ -215,7 +218,8 @@ bool in_buff(string v){
 void ERROR(string error){
     extern int lineNum;
     cerr << "ERROR at line " << lineNum << ": " << error << endl;
-   // exit(1);
+    if_err = true;
+    // exit(1);
 }
 
 void write(string s) {
@@ -225,7 +229,7 @@ void write(string s) {
 
 
 
-#line 229 "mini.tab.c" /* yacc.c:339  */
+#line 233 "mini.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -318,13 +322,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 168 "mini.y" /* yacc.c:355  */
+#line 172 "mini.y" /* yacc.c:355  */
 
   int		int_val;
   string*	op_val;
   char*		code;
 
-#line 328 "mini.tab.c" /* yacc.c:355  */
+#line 332 "mini.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -341,7 +345,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 345 "mini.tab.c" /* yacc.c:358  */
+#line 349 "mini.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -643,14 +647,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   196,   196,   199,   200,   203,   208,   214,   219,   230,
-     238,   266,   272,   279,   285,   296,   311,   313,   319,   323,
-     329,   333,   340,   343,   348,   364,   372,   384,   392,   402,
-     406,   428,   433,   438,   444,   449,   453,   457,   461,   477,
-     485,   488,   496,   500,   507,   518,   525,   535,   538,   548,
-     553,   557,   569,   576,   580,   584,   588,   592,   596,   602,
-     605,   613,   621,   631,   634,   642,   652,   656,   662,   678,
-     682,   686,   691,   697,   715,   726
+       0,   200,   200,   203,   204,   207,   215,   221,   226,   237,
+     245,   287,   293,   300,   306,   317,   332,   334,   340,   344,
+     350,   354,   361,   364,   369,   385,   393,   405,   413,   423,
+     427,   449,   454,   459,   465,   470,   474,   478,   482,   498,
+     505,   508,   516,   520,   527,   538,   545,   555,   558,   568,
+     573,   577,   589,   596,   600,   604,   608,   612,   616,   622,
+     625,   633,   641,   651,   654,   662,   672,   676,   682,   698,
+     702,   706,   711,   717,   734,   745
 };
 #endif
 
@@ -1528,103 +1532,120 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 196 "mini.y" /* yacc.c:1646  */
+#line 200 "mini.y" /* yacc.c:1646  */
     {}
-#line 1534 "mini.tab.c" /* yacc.c:1646  */
+#line 1538 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 203 "mini.y" /* yacc.c:1646  */
+#line 207 "mini.y" /* yacc.c:1646  */
     {
-		     cout << "func " << *(yyvsp[-1].op_val) <<  endl;
+		     //cout << "func " << *$2 <<  endl;
+                     string tempString = "func " + *(yyvsp[-1].op_val) +  "\n";
+		     superBuff.push_back(tempString);
+                     write(": start ");
 		}
-#line 1542 "mini.tab.c" /* yacc.c:1646  */
+#line 1549 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 208 "mini.y" /* yacc.c:1646  */
+#line 215 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in prams params_end" << endl;
 		    is_param = false;
 		}
-#line 1551 "mini.tab.c" /* yacc.c:1646  */
+#line 1558 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 214 "mini.y" /* yacc.c:1646  */
+#line 221 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in params params_start" << endl;
 		    is_param = true;
 		}
-#line 1560 "mini.tab.c" /* yacc.c:1646  */
+#line 1567 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 219 "mini.y" /* yacc.c:1646  */
+#line 226 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in begin_locals" << endl;
-		    while(!param_table.empty()) {
-			write("= " + param_table.back() + ", $" + SSTR(param_num));
-			param_table.pop_back();
-			param_num++;
-		    }
+                    while(!param_table.empty()){
+                        write("= " + param_table.back() + ", $" + SSTR(param_num));
+                        param_table.pop_back();
+                        param_num++;
+                    }
 		    is_local = true;
 		}
-#line 1574 "mini.tab.c" /* yacc.c:1646  */
+#line 1581 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 230 "mini.y" /* yacc.c:1646  */
+#line 237 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in end_locals" << endl;
 		    is_local = false;
 		    
 		    
 		}
-#line 1585 "mini.tab.c" /* yacc.c:1646  */
+#line 1592 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 238 "mini.y" /* yacc.c:1646  */
+#line 245 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in function ---------------" << endl;
 		    
 		    for(unsigned int i=0; i < var_table.size(); ++i) {
 			if(var_table.at(i).type == "int") {
-			    cout << ". " << var_table.at(i).name << endl;
-
+			    //cout << ". " << var_table.at(i).name << endl;
+                            string tempString = ". " + var_table.at(i).name + "\n";
+                            superBuff.push_back(tempString);
 			}
 			else {
-			    cout << ".[] " << var_table.at(i).name << endl;
+			    //cout << ".[] " << var_table.at(i).name << endl;
+                            string tempString = ".[] " + var_table.at(i).name + "\n";
+                            superBuff.push_back(tempString);
 			}
-			//var_table.erase(var_table.begin());
+                        //var_table.erase(var_table.begin());
 		    }
 		    for(unsigned int i=0; i < buff.size(); ++i) {
 			if(buff.at(i).at(0) == ':' && buff.at(i).at(1) == ' '){
-			    cout << buff.at(i) << endl;
+			    //cout << buff.at(i) << endl;
+                            string tempString = buff.at(i) + "\n";
+                            superBuff.push_back(tempString);
 			}
 			else {
-			    cout << buff.at(i) << endl;
+			    //cout << "    " <<  buff.at(i) << endl;
+                            string tempString = buff.at(i) + "\n";
+                            superBuff.push_back(tempString);
 			}
-			
 		    }
-		    buff.clear();
-		    var_table.clear();
-		    cout << "endfunc" << endl << endl;
+
+		    if(!op_table.empty()){
+			//cout << "    ret " << get_op_val() << endl;
+                        string tempString = "ret " + get_op_val() + "\n";
+                        superBuff.push_back(tempString);
+	  	    }
+		    //cout << "    endfunc" << endl << endl;
+                    buff.clear();
+                    var_table.clear();
+                    string tempString = "endfunc\n\n";
+                    superBuff.push_back(tempString);
 		}
-#line 1616 "mini.tab.c" /* yacc.c:1646  */
+#line 1637 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 266 "mini.y" /* yacc.c:1646  */
+#line 287 "mini.y" /* yacc.c:1646  */
     {
 		    (yyval.op_val) = (yyvsp[0].op_val); 
 		}
-#line 1624 "mini.tab.c" /* yacc.c:1646  */
+#line 1645 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 272 "mini.y" /* yacc.c:1646  */
+#line 293 "mini.y" /* yacc.c:1646  */
     {
 		    ident_stack.clear();
 		    ident_stack.push_back(*(yyvsp[0].op_val));
@@ -1632,19 +1653,19 @@ yyreduce:
 			param_table.push_back("_" + *((yyvsp[0].op_val)));
 		    }
 		}
-#line 1636 "mini.tab.c" /* yacc.c:1646  */
+#line 1657 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 279 "mini.y" /* yacc.c:1646  */
+#line 300 "mini.y" /* yacc.c:1646  */
     {
 		    ident_stack.push_back(*(yyvsp[-2].op_val));
 		}
-#line 1644 "mini.tab.c" /* yacc.c:1646  */
+#line 1665 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 285 "mini.y" /* yacc.c:1646  */
+#line 306 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in declaration colon integer" << endl;
 		    while(!ident_stack.empty()) {
@@ -1656,11 +1677,11 @@ yyreduce:
 			ident_stack.pop_back();
 		    }
 		}
-#line 1660 "mini.tab.c" /* yacc.c:1646  */
+#line 1681 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 296 "mini.y" /* yacc.c:1646  */
+#line 317 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in declaration colon array" << endl;
 		    while(!ident_stack.empty()) {
@@ -1672,79 +1693,79 @@ yyreduce:
 			ident_stack.pop_back();
 		    }
 		}
-#line 1676 "mini.tab.c" /* yacc.c:1646  */
+#line 1697 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 311 "mini.y" /* yacc.c:1646  */
+#line 332 "mini.y" /* yacc.c:1646  */
     {   
 		}
-#line 1683 "mini.tab.c" /* yacc.c:1646  */
+#line 1704 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 313 "mini.y" /* yacc.c:1646  */
+#line 334 "mini.y" /* yacc.c:1646  */
     {      
 		    //cout<< "in declarations semicolon" << endl; 
 		}
-#line 1691 "mini.tab.c" /* yacc.c:1646  */
+#line 1712 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 319 "mini.y" /* yacc.c:1646  */
+#line 340 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in read_vars var" << endl;
 		    write(".< " + get_op_val());
 		}
-#line 1700 "mini.tab.c" /* yacc.c:1646  */
+#line 1721 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 323 "mini.y" /* yacc.c:1646  */
+#line 344 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in read_vars var comma" << endl;
 		    write(".< " + get_op_val());
 		}
-#line 1709 "mini.tab.c" /* yacc.c:1646  */
+#line 1730 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 329 "mini.y" /* yacc.c:1646  */
+#line 350 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in write_vars var" << endl;
 			write(".> " + get_op_val());
 		}
-#line 1718 "mini.tab.c" /* yacc.c:1646  */
+#line 1739 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 333 "mini.y" /* yacc.c:1646  */
+#line 354 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in write_vars var comma" << endl;
 			write(".> " + get_op_val());
 		
 		}
-#line 1728 "mini.tab.c" /* yacc.c:1646  */
+#line 1749 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 340 "mini.y" /* yacc.c:1646  */
+#line 361 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statements epsilon" << endl;
 		}
-#line 1736 "mini.tab.c" /* yacc.c:1646  */
+#line 1757 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 343 "mini.y" /* yacc.c:1646  */
+#line 364 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statements statement semicolon statements" << endl;
 		}
-#line 1744 "mini.tab.c" /* yacc.c:1646  */
+#line 1765 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 348 "mini.y" /* yacc.c:1646  */
+#line 369 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in if_bool if bool_expr" << endl;	
 		    string L1 = get_next_label();
@@ -1759,21 +1780,21 @@ yyreduce:
 		    write(":= " + if_label.back().at(1));
 		    write(": " + if_label.back().at(0));  
 		}
-#line 1763 "mini.tab.c" /* yacc.c:1646  */
+#line 1784 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 364 "mini.y" /* yacc.c:1646  */
+#line 385 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in if_else else statements" << endl;
 		    write(":= " + if_label.back().at(2));
 		    write(": " + if_label.back().at(1));
 		}
-#line 1773 "mini.tab.c" /* yacc.c:1646  */
+#line 1794 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 372 "mini.y" /* yacc.c:1646  */
+#line 393 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in while while" << endl;
 		    vector<string> temp;
@@ -1784,22 +1805,22 @@ yyreduce:
 		    loop_label.push_back(temp);
 		    write(": " + loop_label.back().at(1));
 		}
-#line 1788 "mini.tab.c" /* yacc.c:1646  */
+#line 1809 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 384 "mini.y" /* yacc.c:1646  */
+#line 405 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in while_bool while bool_expr beginloop" << endl;
 		    write("?:= " + loop_label.back().at(2) + ", " + get_op_val());
 		    write(":= " + loop_label.back().at(3));
 		    write(": " + loop_label.back().at(2));
 		}
-#line 1799 "mini.tab.c" /* yacc.c:1646  */
+#line 1820 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 392 "mini.y" /* yacc.c:1646  */
+#line 413 "mini.y" /* yacc.c:1646  */
     {
 		    vector<string> temp;
 		    temp.push_back("do_while");
@@ -1808,19 +1829,19 @@ yyreduce:
 		    loop_label.push_back(temp);
 		    write(": " + loop_label.back().at(1));
 		}
-#line 1812 "mini.tab.c" /* yacc.c:1646  */
+#line 1833 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 402 "mini.y" /* yacc.c:1646  */
+#line 423 "mini.y" /* yacc.c:1646  */
     {
 		    write(": " + loop_label.back().at(2));
 		}
-#line 1820 "mini.tab.c" /* yacc.c:1646  */
+#line 1841 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 406 "mini.y" /* yacc.c:1646  */
+#line 427 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statment var assign expression" << endl;
 		    //TODO: check if in table
@@ -1829,7 +1850,7 @@ yyreduce:
 			string op1 = get_op_val();
 			bool tempBool = in_var_table(op1);
 			if(!tempBool){
-			    ERROR("variable not declared in this scope");
+			    ERROR("variable " + op1 + "not declared in this scope");
 			}
 			write("= " + op1 + ", " + op2);
 		    }
@@ -1839,83 +1860,83 @@ yyreduce:
 			write("[]= " + op1 + ", " + op2); 
 			bool tempBool = in_var_table(op1);
 			if(!tempBool){
-			    ERROR("variable not declared in this scope");
+			    ERROR("variable" + op1 + "not declared in this scope");
 			}
 		    }
 		}
-#line 1847 "mini.tab.c" /* yacc.c:1646  */
+#line 1868 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 428 "mini.y" /* yacc.c:1646  */
+#line 449 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement if then else" << endl;
 		    write(": " + if_label.back().at(2));
 		    if_label.pop_back();
 		}
-#line 1857 "mini.tab.c" /* yacc.c:1646  */
+#line 1878 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 433 "mini.y" /* yacc.c:1646  */
+#line 454 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement if then" << endl;
 		    write(": " + if_label.back().at(1));
 		    if_label.pop_back();
 		}
-#line 1867 "mini.tab.c" /* yacc.c:1646  */
+#line 1888 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 438 "mini.y" /* yacc.c:1646  */
+#line 459 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement while loop" << endl;
 		    write(":= " + loop_label.back().at(1));
 		    write(": " + loop_label.back().at(3));
 		    loop_label.pop_back();
 		}
-#line 1878 "mini.tab.c" /* yacc.c:1646  */
+#line 1899 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 444 "mini.y" /* yacc.c:1646  */
+#line 465 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement do while loop" << endl;
 		    write("?:= " + loop_label.back().at(1) + ", " + get_op_val());
 		    loop_label.pop_back();
 		}
-#line 1888 "mini.tab.c" /* yacc.c:1646  */
+#line 1909 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 449 "mini.y" /* yacc.c:1646  */
+#line 470 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement foreach loop" << endl;
 		
 		}
-#line 1897 "mini.tab.c" /* yacc.c:1646  */
+#line 1918 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 453 "mini.y" /* yacc.c:1646  */
+#line 474 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement read vars" << endl;		
     		
 		}
-#line 1906 "mini.tab.c" /* yacc.c:1646  */
+#line 1927 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 457 "mini.y" /* yacc.c:1646  */
+#line 478 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement write vars" << endl;
 		
 		}
-#line 1915 "mini.tab.c" /* yacc.c:1646  */
+#line 1936 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 461 "mini.y" /* yacc.c:1646  */
+#line 482 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement continue" << endl;
 		    if(!loop_label.empty()) {
@@ -1932,59 +1953,58 @@ yyreduce:
 		    }
 		
 		}
-#line 1936 "mini.tab.c" /* yacc.c:1646  */
+#line 1957 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 477 "mini.y" /* yacc.c:1646  */
+#line 498 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in statement return expression" << endl;
 		    write("ret " + get_op_val());
-		
 		}
-#line 1946 "mini.tab.c" /* yacc.c:1646  */
+#line 1966 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 485 "mini.y" /* yacc.c:1646  */
+#line 505 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in relation_expr relation_expr_param" << endl;
 		}
-#line 1954 "mini.tab.c" /* yacc.c:1646  */
+#line 1974 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 488 "mini.y" /* yacc.c:1646  */
+#line 508 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in relation_expr relation_expr_param" << endl;
 		    add_temp("int");
 		    write("! " + last_temp_name + ", " + get_op_val());
 		    add_op(last_temp_name);
 		}
-#line 1965 "mini.tab.c" /* yacc.c:1646  */
+#line 1985 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 496 "mini.y" /* yacc.c:1646  */
+#line 516 "mini.y" /* yacc.c:1646  */
     {
 		// checks if relation_expr_not lacks surrounding parens
 		    //cout<< "in relation_expr_param relation_expr_not" << endl;
 		}
-#line 1974 "mini.tab.c" /* yacc.c:1646  */
+#line 1994 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 500 "mini.y" /* yacc.c:1646  */
+#line 520 "mini.y" /* yacc.c:1646  */
     {
 		// check if relation_expr_not contains parens
 		    //cout<< "in relation_expr_param (relation_expr_not)" << endl;
 
 		}
-#line 1984 "mini.tab.c" /* yacc.c:1646  */
+#line 2004 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 507 "mini.y" /* yacc.c:1646  */
+#line 527 "mini.y" /* yacc.c:1646  */
     {
 		// checks if realtion_expr is true or false based on e1 and e2
 		// create temp variable (dest) to store the comparison
@@ -1996,11 +2016,11 @@ yyreduce:
 		    write(comp + " " + last_temp_name + ", " + op1 + ", " + op2);
 		    add_op(last_temp_name);	
 		}
-#line 2000 "mini.tab.c" /* yacc.c:1646  */
+#line 2020 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 518 "mini.y" /* yacc.c:1646  */
+#line 538 "mini.y" /* yacc.c:1646  */
     {
 		// sets relation_expr to be true
 		    //cout<< "in relation_expr_not true" << endl;
@@ -2008,11 +2028,11 @@ yyreduce:
 		    write("= " + last_temp_name + ", 1");
 		    add_op(last_temp_name);
 		}
-#line 2012 "mini.tab.c" /* yacc.c:1646  */
+#line 2032 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 525 "mini.y" /* yacc.c:1646  */
+#line 545 "mini.y" /* yacc.c:1646  */
     {
 		// sets relation_expr to be false
 		    //cout<< "in relation_expression_not false" << endl;
@@ -2020,19 +2040,19 @@ yyreduce:
 		    write("= " + last_temp_name + ", 0");
 		    add_op(last_temp_name);
 		}
-#line 2024 "mini.tab.c" /* yacc.c:1646  */
+#line 2044 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 535 "mini.y" /* yacc.c:1646  */
+#line 555 "mini.y" /* yacc.c:1646  */
     {
     
 		}
-#line 2032 "mini.tab.c" /* yacc.c:1646  */
+#line 2052 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 538 "mini.y" /* yacc.c:1646  */
+#line 558 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in relattion_and_expr_next" << endl;
 		    add_temp("int");
@@ -2041,29 +2061,29 @@ yyreduce:
 		    write("&& " + last_temp_name + ", " + op1 + ", " + op2);
 		    add_op(last_temp_name);		
 		}
-#line 2045 "mini.tab.c" /* yacc.c:1646  */
+#line 2065 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 548 "mini.y" /* yacc.c:1646  */
+#line 568 "mini.y" /* yacc.c:1646  */
     {
 		// starts AND 
 		    //cout<< "in relation_and_expr relation_expr relation_and_expr_next" << endl;
 		}
-#line 2054 "mini.tab.c" /* yacc.c:1646  */
+#line 2074 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 553 "mini.y" /* yacc.c:1646  */
+#line 573 "mini.y" /* yacc.c:1646  */
     {
 		// finished with last OR statment in bool expression
 		    //cout<< "in bool_expr_next epsilon" << endl;
 		}
-#line 2063 "mini.tab.c" /* yacc.c:1646  */
+#line 2083 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 557 "mini.y" /* yacc.c:1646  */
+#line 577 "mini.y" /* yacc.c:1646  */
     {
 		// increment number of bool expressions 
 		    //cout<< "in bool_expr_next or bool_expr" << endl;
@@ -2074,83 +2094,83 @@ yyreduce:
 		    add_op(last_temp_name);
 
 		}
-#line 2078 "mini.tab.c" /* yacc.c:1646  */
+#line 2098 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 569 "mini.y" /* yacc.c:1646  */
+#line 589 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in bool_expr realation_and_expr bool_expr_next" << endl;
 		// start of a bool_expr
 			
 		}
-#line 2088 "mini.tab.c" /* yacc.c:1646  */
+#line 2108 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 576 "mini.y" /* yacc.c:1646  */
+#line 596 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in comp eq" << endl;
 		    add_op("==");	
 		}
-#line 2097 "mini.tab.c" /* yacc.c:1646  */
+#line 2117 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 580 "mini.y" /* yacc.c:1646  */
+#line 600 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in comp neq" << endl;
 		    add_op("!=");
 		}
-#line 2106 "mini.tab.c" /* yacc.c:1646  */
+#line 2126 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 584 "mini.y" /* yacc.c:1646  */
+#line 604 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in comp lt" << endl;
 		    add_op("<");
 		}
-#line 2115 "mini.tab.c" /* yacc.c:1646  */
+#line 2135 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 588 "mini.y" /* yacc.c:1646  */
+#line 608 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in comp gt" << endl;
 		    add_op(">");
 		}
-#line 2124 "mini.tab.c" /* yacc.c:1646  */
+#line 2144 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 592 "mini.y" /* yacc.c:1646  */
+#line 612 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in comp lte" << endl;
 		    add_op("<=");
 		}
-#line 2133 "mini.tab.c" /* yacc.c:1646  */
+#line 2153 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 596 "mini.y" /* yacc.c:1646  */
+#line 616 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in comp gte" << endl;
 		    add_op(">=");	
 		}
-#line 2142 "mini.tab.c" /* yacc.c:1646  */
+#line 2162 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 602 "mini.y" /* yacc.c:1646  */
+#line 622 "mini.y" /* yacc.c:1646  */
     {
 			    //cout<< "in muliplicative_expr term" << endl;
 			}
-#line 2150 "mini.tab.c" /* yacc.c:1646  */
+#line 2170 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 605 "mini.y" /* yacc.c:1646  */
+#line 625 "mini.y" /* yacc.c:1646  */
     {
 			    //cout<< "in multiplicative_expr term mult" << endl;
 			    add_temp("int");
@@ -2159,11 +2179,11 @@ yyreduce:
 			    write("* " + last_temp_name + ", " + op1 + ", " + op2);
 			    add_op(last_temp_name);
 		    	}
-#line 2163 "mini.tab.c" /* yacc.c:1646  */
+#line 2183 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 613 "mini.y" /* yacc.c:1646  */
+#line 633 "mini.y" /* yacc.c:1646  */
     {
 			    //cout<< "in multiplicative_expr term div" << endl;
 			    add_temp("int");
@@ -2172,11 +2192,11 @@ yyreduce:
 			    write("/ " + last_temp_name + ", " + op1 + ", " + op2);
 			    add_op(last_temp_name);
 			}
-#line 2176 "mini.tab.c" /* yacc.c:1646  */
+#line 2196 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 621 "mini.y" /* yacc.c:1646  */
+#line 641 "mini.y" /* yacc.c:1646  */
     {
 			    //cout<< "in multiplicative_expr term mod" << endl;
 			    add_temp("int");
@@ -2185,19 +2205,19 @@ yyreduce:
 			    write("% " + last_temp_name + ", " + op1 + ", " + op2);
 			    add_op(last_temp_name);
 			}
-#line 2189 "mini.tab.c" /* yacc.c:1646  */
+#line 2209 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 631 "mini.y" /* yacc.c:1646  */
+#line 651 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in expression multiplicative_expr" << endl;
 		}
-#line 2197 "mini.tab.c" /* yacc.c:1646  */
+#line 2217 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 634 "mini.y" /* yacc.c:1646  */
+#line 654 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in expression multiplicative_expr add" << endl;
 		    add_temp("int");
@@ -2206,11 +2226,11 @@ yyreduce:
 		    write("+ " + last_temp_name + ", " + op1 + ", " + op2);
 		    add_op(last_temp_name);
 		}
-#line 2210 "mini.tab.c" /* yacc.c:1646  */
+#line 2230 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 642 "mini.y" /* yacc.c:1646  */
+#line 662 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in expression multiplicative_expr sub" << endl;
 		    add_temp("int");
@@ -2219,29 +2239,29 @@ yyreduce:
 		    write("- " + last_temp_name + ", " + op1 + ", " + op2);
 		    add_op(last_temp_name);
 		}
-#line 2223 "mini.tab.c" /* yacc.c:1646  */
+#line 2243 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 652 "mini.y" /* yacc.c:1646  */
+#line 672 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in expressions expression" << endl;
 
 		}
-#line 2232 "mini.tab.c" /* yacc.c:1646  */
+#line 2252 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 656 "mini.y" /* yacc.c:1646  */
+#line 676 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in expressions expression comma expression" << endl;
 
 		}
-#line 2241 "mini.tab.c" /* yacc.c:1646  */
+#line 2261 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 662 "mini.y" /* yacc.c:1646  */
+#line 682 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in term var" << endl;
 		    add_op(get_op_val(), check_op_type());
@@ -2258,50 +2278,50 @@ yyreduce:
 		    */
 
 		}
-#line 2262 "mini.tab.c" /* yacc.c:1646  */
+#line 2282 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 678 "mini.y" /* yacc.c:1646  */
+#line 698 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in term number" << endl;
 		    add_op(SSTR((yyvsp[0].int_val)));		    
 		}
-#line 2271 "mini.tab.c" /* yacc.c:1646  */
+#line 2291 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 682 "mini.y" /* yacc.c:1646  */
+#line 702 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in term (expression)" << endl;
 		    
 		}
-#line 2280 "mini.tab.c" /* yacc.c:1646  */
+#line 2300 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 686 "mini.y" /* yacc.c:1646  */
+#line 706 "mini.y" /* yacc.c:1646  */
     {
 		    add_op(SSTR((yyvsp[0].int_val) * -1));
 		    //cout<< "in term sub number" << endl;
 
 		}
-#line 2290 "mini.tab.c" /* yacc.c:1646  */
+#line 2310 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 691 "mini.y" /* yacc.c:1646  */
+#line 711 "mini.y" /* yacc.c:1646  */
     {
 		    //cout<< "in term sub (expression)" << endl;
 		    add_temp("int");
 		    write("- " + last_temp_name + ", 0, " + get_op_val());
 		    add_op(last_temp_name);
 		}
-#line 2301 "mini.tab.c" /* yacc.c:1646  */
+#line 2321 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 697 "mini.y" /* yacc.c:1646  */
+#line 717 "mini.y" /* yacc.c:1646  */
     { //FUNCTIONS
 		    //cout<< "in term ident (expression)" << endl;
 		    add_temp("int");
@@ -2309,50 +2329,49 @@ yyreduce:
 		    //bool tempBool = in_func_table(*($1));
 		    //if(!tempBool){
 		    //	ERROR("Function not declared in this scope");
-                    //}
+                    //} 
 		    write("param " + last_temp_name);
-		    add_temp("int");
+                    add_temp("int");
 		    add_op(last_temp_name);
-		    write("call " + *((yyvsp[-3].op_val)) + ", " + get_op_val());
-
+                    write("call " + *((yyvsp[-3].op_val)) + ", " + get_op_val());
 		    
 		}
-#line 2321 "mini.tab.c" /* yacc.c:1646  */
+#line 2340 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 715 "mini.y" /* yacc.c:1646  */
+#line 734 "mini.y" /* yacc.c:1646  */
     {
 		//cout<< "in var ident" << endl; 
 		string id = "_" + *((yyvsp[0].op_val));
 		//TODO: check if id exists already
 		bool tempBool = in_var_table(*((yyvsp[0].op_val)));
-		if(!tempBool){
-		    ERROR("variable is not defined in this scope");
+		if(tempBool){
+		    ERROR("variable " + *((yyvsp[0].op_val)) + " already defined.");
 		}
 		add_op(id);
 		
 	    }
-#line 2337 "mini.tab.c" /* yacc.c:1646  */
+#line 2356 "mini.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 726 "mini.y" /* yacc.c:1646  */
+#line 745 "mini.y" /* yacc.c:1646  */
     {
 		//cout<< "in var ident[expression]" << endl;
 		string id = "_" + *((yyvsp[-3].op_val));
 		//TODO: check if id exists already
 		bool tempBool = in_var_table(*((yyvsp[-3].op_val)));
-		if(!tempBool){
-		    ERROR("variable is not defined in this scope");
+		if(tempBool){
+		    ERROR("variable " + *((yyvsp[-3].op_val)) + " already defined.");
 		}
 		add_op( id + ", " + get_op_val(), "arr<int>");
 	    }
-#line 2352 "mini.tab.c" /* yacc.c:1646  */
+#line 2371 "mini.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2356 "mini.tab.c" /* yacc.c:1646  */
+#line 2375 "mini.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2580,7 +2599,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 739 "mini.y" /* yacc.c:1906  */
+#line 758 "mini.y" /* yacc.c:1906  */
 
 
 

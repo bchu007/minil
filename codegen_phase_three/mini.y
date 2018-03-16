@@ -9,6 +9,9 @@
 void ERROR();
 int yyerror(const char *s);
 int yylex(void);
+bool if_err = false;
+vector<string> superBuff;
+
 
 struct object {
     string name;
@@ -153,7 +156,8 @@ bool in_buff(string v){
 void ERROR(string error){
     extern int lineNum;
     cerr << "ERROR at line " << lineNum << ": " << error << endl;
-   // exit(1);
+    if_err = true;
+    // exit(1);
 }
 
 void write(string s) {
@@ -201,7 +205,10 @@ functions:	/* epsilon */
 		;
 
 funchead:	FUNCTION ident SEMICOLON {
-		     cout << "func " << *$2 <<  endl;
+		     //cout << "func " << *$2 <<  endl;
+                     string tempString = "func " + *$2 +  "\n";
+		     superBuff.push_back(tempString);
+                     write(": start ");
 		}
 		;
 
@@ -218,11 +225,11 @@ params_start:	BEGIN_PARAMS {
 		;
 begin_locals:	BEGIN_LOCALS {
 		    //cout<< "in begin_locals" << endl;
-		    while(!param_table.empty()) {
-			write("= " + param_table.back() + ", $" + SSTR(param_num));
-			param_table.pop_back();
-			param_num++;
-		    }
+                    while(!param_table.empty()){
+                        write("= " + param_table.back() + ", $" + SSTR(param_num));
+                        param_table.pop_back();
+                        param_num++;
+                    }
 		    is_local = true;
 		}
 		;
@@ -240,26 +247,40 @@ function:	funchead params_start declarations params_end begin_locals declaration
 		    
 		    for(unsigned int i=0; i < var_table.size(); ++i) {
 			if(var_table.at(i).type == "int") {
-			    cout << ". " << var_table.at(i).name << endl;
-
+			    //cout << ". " << var_table.at(i).name << endl;
+                            string tempString = ". " + var_table.at(i).name + "\n";
+                            superBuff.push_back(tempString);
 			}
 			else {
-			    cout << ".[] " << var_table.at(i).name << endl;
+			    //cout << ".[] " << var_table.at(i).name << endl;
+                            string tempString = ".[] " + var_table.at(i).name + "\n";
+                            superBuff.push_back(tempString);
 			}
-			//var_table.erase(var_table.begin());
+                        //var_table.erase(var_table.begin());
 		    }
 		    for(unsigned int i=0; i < buff.size(); ++i) {
 			if(buff.at(i).at(0) == ':' && buff.at(i).at(1) == ' '){
-			    cout << buff.at(i) << endl;
+			    //cout << buff.at(i) << endl;
+                            string tempString = buff.at(i) + "\n";
+                            superBuff.push_back(tempString);
 			}
 			else {
-			    cout << buff.at(i) << endl;
+			    //cout << "    " <<  buff.at(i) << endl;
+                            string tempString = buff.at(i) + "\n";
+                            superBuff.push_back(tempString);
 			}
-			
 		    }
-		    buff.clear();
-		    var_table.clear();
-		    cout << "endfunc" << endl << endl;
+
+		    if(!op_table.empty()){
+			//cout << "    ret " << get_op_val() << endl;
+                        string tempString = "ret " + get_op_val() + "\n";
+                        superBuff.push_back(tempString);
+	  	    }
+		    //cout << "    endfunc" << endl << endl;
+                    buff.clear();
+                    var_table.clear();
+                    string tempString = "endfunc\n\n";
+                    superBuff.push_back(tempString);
 		}
 		;
 
@@ -411,7 +432,7 @@ statement:	var ASSIGN expression {
 			string op1 = get_op_val();
 			bool tempBool = in_var_table(op1);
 			if(!tempBool){
-			    ERROR("variable not declared in this scope");
+			    ERROR("variable " + op1 + "not declared in this scope");
 			}
 			write("= " + op1 + ", " + op2);
 		    }
@@ -421,7 +442,7 @@ statement:	var ASSIGN expression {
 			write("[]= " + op1 + ", " + op2); 
 			bool tempBool = in_var_table(op1);
 			if(!tempBool){
-			    ERROR("variable not declared in this scope");
+			    ERROR("variable" + op1 + "not declared in this scope");
 			}
 		    }
 		} 
@@ -477,7 +498,6 @@ statement:	var ASSIGN expression {
 		| RETURN expression {
 		    //cout<< "in statement return expression" << endl;
 		    write("ret " + get_op_val());
-		
 		} 
 		;
 
@@ -701,12 +721,11 @@ term:		var {
 		    //bool tempBool = in_func_table(*($1));
 		    //if(!tempBool){
 		    //	ERROR("Function not declared in this scope");
-                    //}
+                    //} 
 		    write("param " + last_temp_name);
-		    add_temp("int");
+                    add_temp("int");
 		    add_op(last_temp_name);
-		    write("call " + *($1) + ", " + get_op_val());
-
+                    write("call " + *($1) + ", " + get_op_val());
 		    
 		}
 		;
@@ -717,8 +736,8 @@ var:	    ident {
 		string id = "_" + *($1);
 		//TODO: check if id exists already
 		bool tempBool = in_var_table(*($1));
-		if(!tempBool){
-		    ERROR("variable is not defined in this scope");
+		if(tempBool){
+		    ERROR("variable " + *($1) + " already defined.");
 		}
 		add_op(id);
 		
@@ -728,8 +747,8 @@ var:	    ident {
 		string id = "_" + *($1);
 		//TODO: check if id exists already
 		bool tempBool = in_var_table(*($1));
-		if(!tempBool){
-		    ERROR("variable is not defined in this scope");
+		if(tempBool){
+		    ERROR("variable " + *($1) + " already defined.");
 		}
 		add_op( id + ", " + get_op_val(), "arr<int>");
 	    }
