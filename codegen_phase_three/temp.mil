@@ -1,0 +1,51 @@
+
+
+----------CODEGEN START---------------
+
+
+ > func fibonacci
+    . _k
+    . t0
+    . t1
+    . t2
+    . t3
+    . t4
+    . t5
+: start 
+    <= t0, _k, 1
+    ?:= L0, t0
+    := L1
+: L0
+: L1
+    - t1, _k, 1
+    call fibonacci, t2
+    - t3, _k, 2
+    call fibonacci, t4
+    + t5, t3, t4
+ > func main
+    . _k
+    . t0
+    . t1
+    . t2
+    . t3
+    . t4
+    . t5
+    . _n
+    . _fib_n
+    . t6
+: start 
+    <= t0, _k, 1
+    ?:= L0, t0
+    := L1
+: L0
+: L1
+    - t1, _k, 1
+    call fibonacci, t2
+    - t3, _k, 2
+    call fibonacci, t4
+    + t5, t3, t4
+: start 
+    .< _n
+    call fibonacci, t6
+    val next
+    = _n, t6

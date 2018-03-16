@@ -6,7 +6,7 @@
 #include <sstream>
 
 #define SSTR( x ) static_cast< std::ostringstream & >( std::ostringstream() << std::dec << x ).str()
-void ERROR();
+
 int yyerror(const char *s);
 int yylex(void);
 
@@ -91,67 +91,6 @@ string get_op_val() {
 	cout << "ERROR: no op in op table" << endl;
 	exit(1);
     }
-}
-
-bool in_var_table(string v){
-    for (unsigned int i = 0; i < var_table.size(); i++){
-        if (var_table.at(i).name == v){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool in_func_table(string v){
-    for (unsigned int i = 0; i < func_table.size(); i++){
-        if (func_table.at(i) == v){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool in_op_table(string v){
-    for (unsigned int i = 0; i < op_table.size(); i++){
-        if (op_table.at(i).val == v){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool in_ident_stack(string v){
-    for (unsigned int i = 0; i < ident_stack.size(); i++){
-        if (ident_stack.at(i) == v){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool in_param_table(string v){
-    for (unsigned int i = 0; i < param_table.size(); i++){
-        if (param_table.at(i) == v){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool in_buff(string v){
-    for (unsigned int i = 0; i < buff.size(); i++){
-        if (buff.at(i) == v){
-            return true;
-        }
-    }
-    return false;
-}
-
-
-void ERROR(string error){
-    extern int lineNum;
-    cerr << "ERROR at line " << lineNum << ": " << error << endl;
-   // exit(1);
 }
 
 void write(string s) {
@@ -272,10 +211,6 @@ identifiers:	ident {
 declaration:	identifiers COLON INTEGER {
 		    //cout<< "in declaration colon integer" << endl;
 		    while(!ident_stack.empty()) {
-			bool boolTemp = in_var_table("_" + ident_stack.back());
-			if(boolTemp){
-			    ERROR("ident redeclaration");
-			}
 			add_object("_" + ident_stack.back(), "int");
 			ident_stack.pop_back();
 		    }
@@ -283,10 +218,6 @@ declaration:	identifiers COLON INTEGER {
 		| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
 		    //cout<< "in declaration colon array" << endl;
 		    while(!ident_stack.empty()) {
-			bool boolTemp = in_var_table("_" + ident_stack.back());
-			if(boolTemp){
-			    ERROR("ident redeclaration");
-			}
 			add_object("_" + ident_stack.back(), "arr<int>", $5);
 			ident_stack.pop_back();
 		    }
@@ -396,20 +327,12 @@ statement:	var ASSIGN expression {
 		    string op2 = get_op_val();
 		    if(check_op_type() == "int") {
 			string op1 = get_op_val();
-			bool tempBool = in_var_table(op1);
-			if(!tempBool){
-			    ERROR("variable not declared in this scope");
-			}
 			write("= " + op1 + ", " + op2);
 		    }
-		    //TODO: ARRAY errors
 		    else {
 			string op1 = get_op_val();
 			write("[]= " + op1 + ", " + op2); 
-			bool tempBool = in_var_table(op1);
-			if(!tempBool){
-			    ERROR("variable not declared in this scope");
-			}
+
 		    }
 		} 
 		| if_bool THEN statements if_else ENDIF {
@@ -683,11 +606,7 @@ term:		var {
 		| ident L_PAREN expressions R_PAREN { //FUNCTIONS
 		    //cout<< "in term ident (expression)" << endl;
 		    add_temp("int");
-		    //TODO:check if id exists
-		    //bool tempBool = in_func_table(*($1));
-		    //if(!tempBool){
-		    //	ERROR("Function not declared in this scope");
-                    //} 
+		    //TODO:check if id exists 
 		    write("call " + *($1) + ", " + last_temp_name);
 		    add_op(last_temp_name);
 		    
@@ -699,10 +618,6 @@ var:	    ident {
 		//cout<< "in var ident" << endl; 
 		string id = "_" + *($1);
 		//TODO: check if id exists already
-		bool tempBool = in_var_table(*($1));
-		if(!tempBool){
-		    ERROR("variable is not defined in this scope");
-		}
 		add_op(id);
 		
 	    }
@@ -710,10 +625,6 @@ var:	    ident {
 		//cout<< "in var ident[expression]" << endl;
 		string id = "_" + *($1);
 		//TODO: check if id exists already
-		bool tempBool = in_var_table(*($1));
-		if(!tempBool){
-		    ERROR("variable is not defined in this scope");
-		}
 		add_op( id + ", " + get_op_val(), "arr<int>");
 		//cout << " >  []" << id << endl;
 	    }
