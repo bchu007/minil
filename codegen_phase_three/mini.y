@@ -207,6 +207,7 @@ functions:	/* epsilon */
 funchead:	FUNCTION ident SEMICOLON {
 		     //cout << "func " << *$2 <<  endl;
                      string tempString = "func " + *$2 +  "\n";
+		     func_table.push_back(*$2);
 		     superBuff.push_back(tempString);
                      write(": start ");
 		}
@@ -253,7 +254,7 @@ function:	funchead params_start declarations params_end begin_locals declaration
 			}
 			else {
 			    //cout << ".[] " << var_table.at(i).name << endl;
-                            string tempString = ".[] " + var_table.at(i).name + "\n";
+                            string tempString = ".[] " + var_table.at(i).name + ", " + SSTR(var_table.at(i).size) +"\n";
                             superBuff.push_back(tempString);
 			}
                         //var_table.erase(var_table.begin());
@@ -738,11 +739,12 @@ term:		var {
 		| ident L_PAREN expressions R_PAREN { //FUNCTIONS
 		    //cout<< "in term ident (expression)" << endl;
 		    add_temp("int");
+
 		    //TODO:check if id exists
-		    //bool tempBool = in_func_table(*($1));
-		    //if(!tempBool){
-		    //	ERROR("Function not declared in this scope");
-                    //} 
+		    bool tempBool = in_func_table(*($1));
+		    if(!tempBool){
+		    	ERROR("Function not declared in this scope");
+                    } 
 		    string x;
 		    //if(!op_table.empty()){
 			//x = SSTR(op_table.size());
